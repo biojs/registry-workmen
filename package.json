@@ -32,8 +32,10 @@
     "test": "./node_modules/gulp/bin/gulp.js gulp test"
   },
   "dependencies": {
-    "github": "^0.2.2",
-    "nock": "^0.47.0",
+	"dateformat": "^1.0.8",
+    "npm-registry": "^0.1.11",
+    "npm-stats": "^0.3.0",
+    "request-json": "^0.4.12"
     "npm-registry": "^0.1.11"
   },
   "devDependencies": {

@@ -1,0 +1,44 @@
+{
+  "name": "biojs-registry-workmen",
+  "description": "The backend worker for the BioJS registry",
+  "version": "0.1.0",
+  "homepage": "https://github.com/biojs/biojs-registry-workmen",
+  "author": {
+    "name": "BioJS",
+    "email": "biojs-technical@googlegroups.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/biojs/biojs-registry-workmen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/biojs/biojs-registry-workmen/issues"
+  },
+  "licenses": [
+    {
+      "type": "MIT",
+      "url": "https://github.com/biojs/biojs-registry-workmen/blob/master/LICENSE"
+    }
+  ],
+  "main": "lib/biojs-registry-workmen",
+  "bin": {
+    "biojs-registry-workmen": "bin/biojs-registry-workmen.js"
+  },
+  "engines": {
+    "node": ">= 0.10.26",
+    "npm": ">=1.4.3"
+  },
+  "scripts": {
+    "test": "./node_modules/gulp/bin/gulp.js gulp test"
+  },
+  "dependencies": {
+    "npm-registry": "^0.1.11"
+  },
+  "devDependencies": {
+    "mocha": "~1.10.0",
+    "chai": "~1.8.0",
+    "gulp": "~3.5.0",
+    "gulp-mocha": "~0.4.1"
+  },
+  "keywords": []
+}

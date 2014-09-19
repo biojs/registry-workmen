@@ -32,7 +32,11 @@
     "test": "./node_modules/gulp/bin/gulp.js gulp test"
   },
   "dependencies": {
-    "npm-registry": "^0.1.11"
+    "dateformat": "^1.0.8",
+    "npm-download-counts": "^0.1.1",
+    "npm-registry": "^0.1.11",
+    "npm-stats": "^0.3.0",
+    "request-json": "^0.4.12"
   },
   "devDependencies": {
     "mocha": "~1.10.0",

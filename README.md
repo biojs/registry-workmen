@@ -22,3 +22,23 @@ Future
 -------
 
 Avoid duplicate requests by using the existing DB at the beginning and cache.
+
+Install
+-------
+
+```
+npm install
+```
+
+Creds for github
+------
+
+```
+{type:"oauth", token:"<token>"}
+```
+
+Create your own oAuth token here
+
+https://github.com/settings/applications
+
+[more info](https://www.npmjs.org/package/github)

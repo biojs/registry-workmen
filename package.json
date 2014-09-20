@@ -32,17 +32,21 @@
     "test": "./node_modules/gulp/bin/gulp.js gulp test"
   },
   "dependencies": {
-	"dateformat": "^1.0.8",
+    "biojs-events": "0.0.4",
+    "dateformat": "^1.0.8",
+    "github": "^0.2.2",
+    "nedb": "^0.11.1",
+    "nock": "^0.47.0",
     "npm-registry": "^0.1.11",
     "npm-stats": "^0.3.0",
-    "request-json": "^0.4.12"
-    "npm-registry": "^0.1.11"
+    "request": "^2.44.0"
   },
   "devDependencies": {
-    "mocha": "~1.10.0",
     "chai": "~1.8.0",
     "gulp": "~3.5.0",
-    "gulp-mocha": "~0.4.1"
+    "gulp-mocha": "~0.4.1",
+    "mocha": "~1.10.0",
+    "sinon": "^1.10.3"
   },
   "keywords": []
 }

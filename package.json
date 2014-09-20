@@ -1,7 +1,7 @@
 {
   "name": "biojs-registry-workmen",
   "description": "The backend worker for the BioJS registry",
-  "version": "0.1.0",
+  "version": "0.1.0-4",
   "homepage": "https://github.com/biojs/biojs-registry-workmen",
   "author": {
     "name": "BioJS",
@@ -21,19 +21,19 @@
     }
   ],
   "main": "lib/biojs-registry-workmen",
-  "bin": {
-    "biojs-registry-workmen": "bin/biojs-registry-workmen.js"
-  },
   "engines": {
     "node": ">= 0.10.26",
     "npm": ">=1.4.3"
   },
   "scripts": {
-    "test": "./node_modules/gulp/bin/gulp.js gulp test"
+    "test": "./node_modules/gulp/bin/gulp.js gulp test",
+    "start": "node server.js"
   },
   "dependencies": {
     "biojs-events": "0.0.4",
+    "dat": "6.6.x",
     "dateformat": "^1.0.8",
+    "express": "^4.9.4",
     "github": "^0.2.2",
     "nedb": "^0.11.1",
     "nock": "^0.47.0",
@@ -48,5 +48,10 @@
     "mocha": "~1.10.0",
     "sinon": "^1.10.3"
   },
-  "keywords": []
+  "keywords": [],
+  "subdomain": "biojs-registry-workmen",
+  "domains": [
+    "workmen.biojs.net",
+	"*.biojs.net"
+  ]
 }

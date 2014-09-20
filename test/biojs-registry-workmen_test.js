@@ -48,8 +48,11 @@ describe('github module', function(){
         assert.equal(msa.github.id, 20128188);
         done();
       };
-      var ghClient = new github(customDone);
-      ghClient.query(pkg); 
+      var customOn = function(name, fn){
+        fn(pkg);
+      }
+      var ghClient = new github({trigger: customDone, on: customOn});
+      //ghClient.query(pkg); 
     });
   });
 });

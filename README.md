@@ -33,6 +33,9 @@ npm install
 Creds for github
 ------
 
+
+`creds.json` (root folder)
+
 ```
 {type:"oauth", token:"<token>"}
 ```
@@ -40,5 +43,11 @@ Creds for github
 Create your own oAuth token here
 
 https://github.com/settings/applications
+
+using ENVs:
+
+```
+GITHUB_TOKEN=<token>
+```
 
 [more info](https://www.npmjs.org/package/github)

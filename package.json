@@ -1,7 +1,7 @@
 {
   "name": "biojs-registry-workmen",
   "description": "The backend worker for the BioJS registry",
-  "version": "0.1.0-4",
+  "version": "0.1.0-6",
   "homepage": "https://github.com/biojs/biojs-registry-workmen",
   "author": {
     "name": "BioJS",
@@ -52,6 +52,6 @@
   "subdomain": "biojs-registry-workmen",
   "domains": [
     "workmen.biojs.net",
-	"*.biojs.net"
+    "*.biojs.net"
   ]
 }

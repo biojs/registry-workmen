@@ -9,15 +9,32 @@ new workmen(function(){
 });
 
 // name has to uniq
-app.get('/hello.txt', function(req, res){
+app.get('/hello', function(req, res){
   res.send('Hello World');
 });
 
-app.get('/seb', function(req, res){
+// TODO: keep only one DB instance
+
+app.get('/all', function(req, res){
   var db = new Datastore({ filename: __dirname + '/.necache', autoload: true });
   db.find({}).exec(function (err, docs) {
     res.send(docs);
   });
+});
+
+app.get('/detail/:name', function(req, res){
+  var name = req.params.name;
+  var db = new Datastore({ filename: __dirname + '/.necache', autoload: true });
+  db.find({name: name}).exec(function (err, docs) {
+    if( docs.length == 0){
+      console.log("package " + name + " does not exist.");
+    }
+    res.send(docs);
+  });
+});
+
+app.get('/demo/:name', function(req, res){
+  res.send("in build");
 });
 
 var server = app.listen(3000, function() {

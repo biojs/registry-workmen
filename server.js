@@ -37,6 +37,10 @@ app.get('/demo/:name', function(req, res){
   res.send("in build");
 });
 
+app.get('/', function(req, res){
+  res.sendFile("./README.md", {root: __dirname});
+});
+
 var server = app.listen(3000, function() {
   console.log('Listening on port %d', server.address().port);
 });

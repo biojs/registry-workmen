@@ -35,6 +35,7 @@
     "deepcopy": "^0.3.3",
     "express": "^4.9.4",
     "github": "^0.2.2",
+    "lodash": "^2.4.1",
     "mongodb": "^1.4.14",
     "mquery": "^1.2.0",
     "nedb": "^0.11.1",

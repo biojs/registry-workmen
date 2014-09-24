@@ -20,7 +20,6 @@ runWorker = function(){
     // worker finished - reload db
     console.log("reloading db");
     db = dbNew; 
-    db = new Datastore({ filename: __dirname + '/.necache', autoload: true });
   })
 }
 runWorker();
@@ -35,16 +34,15 @@ app.get('/hello', function(req, res){
 // TODO: keep only one DB instance
 
 app.get('/all', function(req, res){
-  db.find({}).exec(function (err, docs) {
-    //res.jsonp(docs);
+  db().find().exec(function (err, docs) {
+    console.log("len", docs.length);
     res.jsonp(docs);
   });
 });
 
 app.get('/detail/:name', function(req, res){
   var name = req.params.name;
-  var db = new Datastore({ filename: __dirname + '/.necache', autoload: true });
-  db.find({name: name}).exec(function (err, docs) {
+  db().find({name: name}).exec(function (err, docs) {
     if( docs.length == 0){
       console.log("package " + name + " does not exist.");
     }

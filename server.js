@@ -24,7 +24,7 @@ runWorker = function(){
 }
 runWorker();
 // TODO: make this dynamic
-interval = setInterval(runWorker, 3600 * 60);
+//interval = setInterval(runWorker, 3600 * 60);
 
 // name has to uniq
 app.get('/hello', function(req, res){

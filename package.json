@@ -1,7 +1,7 @@
 {
   "name": "biojs-registry-workmen",
   "description": "The backend worker for the BioJS registry",
-  "version": "0.1.0-13",
+  "version": "0.1.0-14",
   "homepage": "https://github.com/biojs/biojs-registry-workmen",
   "author": {
     "name": "BioJS",
@@ -27,7 +27,7 @@
   },
   "scripts": {
     "test": "./node_modules/gulp/bin/gulp.js gulp test",
-    "start": "node server.js"
+    "start": "node server.js 80"
   },
   "dependencies": {
     "biojs-events": "0.0.4",
@@ -43,7 +43,7 @@
     "chai": "~1.8.0",
     "gulp": "~3.5.0",
     "gulp-mocha": "~0.4.1",
-	"nock": "^0.47.0",
+    "nock": "^0.47.0",
     "mocha": "~1.10.0",
     "sinon": "^1.10.3"
   },

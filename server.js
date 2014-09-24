@@ -1,6 +1,6 @@
 var express = require('express');
 var app = express();
-var port = process.argv[2] || 3000;
+var port = process.env.PORT || process.argv[2] || 3000;
 
 //CORS middleware
 var allowCrossDomain = function(req, res, next) {

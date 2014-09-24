@@ -1,12 +1,30 @@
 var express = require('express');
 var app = express();
 
+//CORS middleware
+var allowCrossDomain = function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
+  res.header('Access-Control-Allow-Headers', 'Content-Type');
+  next();
+}
+app.use(allowCrossDomain);
+
+
 var Datastore = require('nedb');
 
 var workmen = require("./lib/workmen");
-new workmen(function(){
-  console.log("worker finished");
-});
+runWorker = function(){
+  new workmen(function(pkg,dbNew){
+    // worker finished - reload db
+    console.log("reloading db");
+    db = dbNew; 
+    db = new Datastore({ filename: __dirname + '/.necache', autoload: true });
+  })
+}
+runWorker();
+// TODO: make this dynamic
+interval = setInterval(runWorker, 3600 * 60);
 
 // name has to uniq
 app.get('/hello', function(req, res){
@@ -16,9 +34,9 @@ app.get('/hello', function(req, res){
 // TODO: keep only one DB instance
 
 app.get('/all', function(req, res){
-  var db = new Datastore({ filename: __dirname + '/.necache', autoload: true });
   db.find({}).exec(function (err, docs) {
-    res.send(docs);
+    //res.jsonp(docs);
+    res.jsonp(docs);
   });
 });
 
@@ -29,7 +47,7 @@ app.get('/detail/:name', function(req, res){
     if( docs.length == 0){
       console.log("package " + name + " does not exist.");
     }
-    res.send(docs);
+    res.jsonp(docs);
   });
 });
 

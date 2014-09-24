@@ -1,6 +1,7 @@
 var express = require('express');
 var app = express();
 var port = process.env.PORT || process.argv[2] || 3000;
+var refreshTime = process.env.REFRESH_TIME || 3600 * 60; // in ms
 
 //CORS middleware
 var allowCrossDomain = function(req, res, next) {
@@ -24,7 +25,7 @@ runWorker = function(){
 }
 runWorker();
 // TODO: make this dynamic
-//interval = setInterval(runWorker, 3600 * 60);
+interval = setInterval(runWorker, refreshTime * 1000);
 
 // name has to uniq
 app.get('/hello', function(req, res){

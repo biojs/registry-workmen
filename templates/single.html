@@ -1,0 +1,17 @@
+<meta charset="UTF-8">
+{% for link in css %}
+	<link type="text/css" rel="stylesheet" href="{{ link }}">
+{% endfor %}
+
+{% for script in scripts  %}
+	<script src="{{ script }}"></script>
+{% endfor %}
+
+
+{% autoescape false %}
+{{ inlineBody }}
+
+<script>
+{{ inlineScript }}
+</script>
+{% endautoescape %}

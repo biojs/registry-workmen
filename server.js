@@ -54,7 +54,7 @@ app.get('/detail/:name', function(req, res){
     if( pkgs.length == 0){
       console.log("package " + name + " does not exist.");
     }
-    var pkg = pkg[0];
+    var pkg = pkgs[0];
     res.jsonp(pkg);
   });
 });

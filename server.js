@@ -73,7 +73,7 @@ app.get('/demo/:name/:snip', function(req, res){
     var snip = pkg.latest.sniper;
 
     // load browserified version
-    snip.js.push("http://wzrd.in/standalone/" + pkg.name + "@" + pkg.version);
+    snip.js.push("http://wzrd.in/bundle/" + pkg.name + "@" + pkg.version);
 
     var expected = 0;
     var counter = 0;

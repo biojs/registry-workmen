@@ -1,14 +1,18 @@
 var express = require('express');
-var app = express();
-var port = process.env.PORT || process.argv[2] || 3000;
-var refreshTime = process.env.REFRESH_TIME || 3600 * 60; // in ms
+var compress = require('compression');
 var swig = require("swig");
 var loadSnippet = require("./snippet");
 
+// cfg
+var port = process.env.PORT || process.argv[2] || 3000;
+var refreshTime = process.env.REFRESH_TIME || 3600 * 60; // in ms
+
 // set swig in express
+var app = express();
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/templates');
+app.use(compress());
 
 //CORS middleware
 var allowCrossDomain = function(req, res, next) {
@@ -18,6 +22,24 @@ var allowCrossDomain = function(req, res, next) {
   next();
 }
 app.use(allowCrossDomain);
+
+// custom powered by
+app.disable('x-powered-by', 'BioJS');
+app.use(function (req, res, next) {
+  res.setHeader("X-Powered-By", "BioJS");
+  next();
+});
+
+// cache the json on the client
+app.use(function (req, res, next) {
+  res.setHeader("Cache-Control", "public,max-age=3600"); // 60m (in s)
+  res.setHeader("Expires", new Date(Date.now() + 3600 * 1000).toUTCString()); // 1h (in ms)
+  next();
+});
+
+// response time
+var responseTime = require('response-time')
+app.use(responseTime())
 
 // routes
 app.get('/', mainpage);

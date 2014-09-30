@@ -1,0 +1,7 @@
+<form id="redirect_form" method="post" action="{{ redirectURL }}">
+<input type="hidden" name="html" value="{{ html | url_encode}}">
+<input type="hidden" name="javascript" value="{{ js | url_encode}}">
+</form>
+<script type="text/javascript">
+    document.getElementById('redirect_form').submit();
+</script>

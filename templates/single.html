@@ -1,17 +1,7 @@
-<meta charset="UTF-8">
-{% for link in css %}
-	<link type="text/css" rel="stylesheet" href="{{ link }}">
-{% endfor %}
+{% include header.html %}
 
-{% for script in scripts  %}
-	<script src="{{ script }}"></script>
-{% endfor %}
-
-
-{% autoescape false %}
-{{ inlineBody }}
+{{ inlineBody | raw }}
 
 <script>
-{{ inlineScript }}
+{{ inlineScript | raw }}
 </script>
-{% endautoescape %}

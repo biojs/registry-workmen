@@ -2,6 +2,7 @@ var express = require('express');
 var compress = require('compression');
 var swig = require("swig");
 var loadSnippet = require("./snippet");
+var jsesc = require('ascii-json');
 
 // cfg
 var port = process.env.PORT || process.argv[2] || 3000;
@@ -38,27 +39,28 @@ app.use(function (req, res, next) {
 });
 
 // response time
-var responseTime = require('response-time')
+  var responseTime = require('response-time')
 app.use(responseTime())
 
-// routes
-app.get('/', mainpage);
-app.get('/all', all);
-app.get('/detail/:name', detail);
-app.get('/demo/:name/:snip', snip);
-app.get('/demo/:name', snipOverview);
-app.get('/jsbin/:name/:snip', snipJSBin);
+  // routes
+  app.get('/', mainpage);
+  app.get('/all', all);
+  app.get('/detail/:name', detail);
+  app.get('/demo/:name/:snip', snip);
+  app.get('/demo/:name', snipOverview);
+  app.get('/jsbin/:name/:snip', snipJSBin);
+  app.get('/codepen/:name/:snip', snipCodepen);
 
-var Datastore = require('nedb');
+  var Datastore = require('nedb');
 
-var workmen = require("./lib/workmen");
-runWorker = function(){
-  new workmen(function(pkg,dbNew){
-    // worker finished - reload db
-    console.log("reloading db");
-    db = dbNew; 
-  })
-}
+  var workmen = require("./lib/workmen");
+  runWorker = function(){
+    new workmen(function(pkg,dbNew){
+      // worker finished - reload db
+      console.log("reloading db");
+      db = dbNew; 
+    })
+  }
 runWorker();
 // TODO: make this dynamic
 interval = setInterval(runWorker, refreshTime * 1000);
@@ -70,7 +72,6 @@ function mainpage(req, res){
 
 function all(req, res){
   db().find().exec(function (err, pkgs) {
-    console.log("len", pkgs.length);
     res.jsonp(pkgs);
   });
 };
@@ -102,25 +103,43 @@ function snip(req, res){
   });
 };
 
-function snipJSBin(req, res){
-var name = req.params.name;
+// https://github.com/jsbin/jsbin/blob/v1.0.0/index.php#L77
+function snipJSBin(req,res){
+  snipEdit(req,res, function(snip){
+    var js = snip.inlineScript;
+    var body = swig.renderFile(__dirname + "/templates/header.html", {
+      scripts: snip.js, css: snip.css});
+    body += "\n" +snip.inlineBody;
+    res.render("jsbin", {html: body, js: js, redirectURL: "http://jsbin.com?js,output"});
+  });
+}
+
+// http://blog.codepen.io/documentation/api/prefill/
+function snipCodepen(req,res){
+  snipEdit(req,res, function(snip){
+    var js = snip.inlineScript;
+    var body = swig.renderFile(__dirname + "/templates/header.html", {
+      scripts: snip.js, css: snip.css});
+    body += "\n" +snip.inlineBody;
+    var obj = { js: js, html: body};
+    obj =  JSON.stringify(obj); 
+    obj = obj.replace(/"/g, '\"'); // unscrew quotes
+    res.render("codepen", {obj: obj, redirectURL: "http://codepen.io/pen/define"});
+  });
+}
+
+function snipEdit(req, res, callback){
+  var name = req.params.name;
   var currentSnip = req.params.snip;
   db().find({name: name}).exec(function (err, pkg) {
     if(pkg.length == 0 || pkg[0].latest.sniper == undefined){
       res.send({error: "no snips"});
       return;
     }
-    loadSnippet({pkg: pkg[0], currentSnip: currentSnip}, function (snip){
-      var js = snip.inlineScript;
-      var body = swig.renderFile(__dirname + "/templates/header.html", {
-        scripts: snip.js, css: snip.css});
-
-      body += "\n" +snip.inlineBody;
-      res.render("jsbin", {html: body, js: js, redirectURL: "http://jsbin.com?js,output"});
-      //res.render("single", {scripts: snip.js, css: snip.css, inlineScript: inlineScript, inlineBody: inlineBody});
+    loadSnippet({pkg: pkg[0], currentSnip: currentSnip, res: res}, function (snip){
+      callback(snip);
     });
   });
-
 }
 
 // list available snips

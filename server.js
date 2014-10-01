@@ -2,7 +2,6 @@ var express = require('express');
 var compress = require('compression');
 var swig = require("swig");
 var loadSnippet = require("./snippet");
-var jsesc = require('ascii-json');
 
 // cfg
 var port = process.env.PORT || process.argv[2] || 3000;

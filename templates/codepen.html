@@ -1,0 +1,6 @@
+<form id="redirect_form" method="post" action="{{ redirectURL }}">
+<input type="hidden" name="data" value='{{ obj }}'>
+</form>
+<script type="text/javascript">
+    document.getElementById('redirect_form').submit();
+</script>

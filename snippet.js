@@ -7,6 +7,8 @@ module.exports = function(obj, callback){
   var pkg = obj.pkg;
   var snip = pkg.latest.sniper;
 
+  console.log(obj.res);
+
   if(pkg.github == undefined){
     res.status(500).send("github repo does not exist");  
     return;

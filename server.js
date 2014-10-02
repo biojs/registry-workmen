@@ -130,12 +130,13 @@ function snipCodepen(req,res){
 function snipEdit(req, res, callback){
   var name = req.params.name;
   var currentSnip = req.params.snip;
+  var resContext = res;
   db().find({name: name}).exec(function (err, pkg) {
     if(pkg.length == 0 || pkg[0].latest.sniper == undefined){
       res.send({error: "no snips"});
       return;
     }
-    loadSnippet({pkg: pkg[0], currentSnip: currentSnip, res: res}, function (snip){
+    loadSnippet({pkg: pkg[0], currentSnip: currentSnip, res: resContext}, function (snip){
       callback(snip);
     });
   });

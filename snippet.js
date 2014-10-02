@@ -53,6 +53,7 @@ module.exports = function(obj, callback){
   if(snip.srcs[currentSnip] === undefined){
     console.log("no js file found" , currentSnip, snip.srcs[currentSnip]);  
     res.status(500).send("no js file found exist");  
+    return;
   }
 
   // js

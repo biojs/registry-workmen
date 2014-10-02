@@ -156,7 +156,7 @@ function snipOverview(req, res){
     if(baseURL.charAt(baseURL.length - 1) !== "/" ){
       baseURL += "/";
     }
-    if(pkg[0].latest.srcs == undefined){
+    if(pkg.latest.srcs == undefined){
       res.send({error: "no github sources found."});
     }
     var snips = Object.keys(pkg.latest.sniper.srcs);

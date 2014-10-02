@@ -42,7 +42,7 @@ module.exports = function(obj, callback){
   var index = 0;
   while(index < snip.js.length){ 
     if(snip.js[index].substring(0,7) === "/build/"){
-      snip.js.shift();
+      snip.js.splice(index,1);
     } else {
       index++;
     }

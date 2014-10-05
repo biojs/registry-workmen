@@ -1,3 +1,5 @@
+module.change_code = 1; // this allows hotswapping of code (ignored in production)
+
 var request = require("request");
 var q = require('rsvp');
 
@@ -6,8 +8,6 @@ module.exports = function(obj, callback){
   var res = obj.res;
   var pkg = obj.pkg;
   var snip = pkg.latest.sniper;
-
-  console.log(obj.res);
 
   if(pkg.github == undefined){
     res.status(500).send("github repo does not exist");  
@@ -66,6 +66,17 @@ module.exports = function(obj, callback){
     var jsURL = convertGithubToRaw(snip.srcs[currentSnip].js.html_url);
     ps.push(new q.Promise(function(resolve,reject){
       request.get(jsURL, function (err, response, body) {
+
+        // TODO: apply dirty hacks on the snippets
+        // problem: access files from the snipper
+        if(body.indexOf("./") >= 0){
+          // TODO: use sth. more generic than this heroku proxy
+          var rawURL = "https://cors-anywhere.herokuapp.com/" + pkg.github.raw_url;
+          var htmlUrl =  rawURL + snip.snippets[0] + "/";
+          body = body.replace("./", htmlUrl);
+        }
+
+
         snip.inlineScript = body;
         resolve();
       });

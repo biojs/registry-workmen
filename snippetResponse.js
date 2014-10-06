@@ -6,13 +6,16 @@ var snip = {};
 snip._demoFill = function (res, item, pkg){
   var instance = pkg.latest.sniper.instance;
   // TODO: experimental way to send events to the main window
-  if(instance !== undefined) {
-    item.inlineScript += ";if(parent !== undefined) { ";
-    item.inlineScript += instance + ".onAll(function(name,data){";
-    item.inlineScript += 'var obj = {name: name, data: data};'; 
-    item.inlineScript += 'parent.postMessage(obj, "*") })';
-    item.inlineScript += "};";
-  }
+  if(pkg.events !== undefined) {
+    var head = ";if(parent !== undefined) { ";
+    var foot = ".onAll(function(name,data){";
+    foot += 'var obj = {name: name, data: data};'; 
+    //foot += 'obj = JSON.stringify(obj);'; 
+    foot += 'parent.postMessage(obj, "*") })';
+    foot += "};";
+  
+    item.inlineScript = item.inlineScript.replace(/\/\/instance=([.a-zA-Z0-9_]+)/, head + "$1" + foot);
+ }
   res.render("single", {scripts: item.js, css: item.css, inlineScript: item.inlineScript, inlineBody: item.inlineBody});
 };
 

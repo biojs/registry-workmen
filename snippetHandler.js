@@ -15,14 +15,14 @@ snip.demo  = function (req, res){
       return;
     }
     loadSnippet({pkg: pkg[0], currentSnip: currentSnip,res:res}, function (item){
-      snipResponse._demoFill(res,item);
+      snipResponse._demoFill(res,item,pkg[0]);
     });
   });
 };
 
 // https://github.com/jsbin/jsbin/blob/v1.0.0/index.php#L77
 snip.jsbin = function (req,res){
-  snipEdit(req,res, function(snip){
+  snip.edit(req,res, function(snip){
     var js = snip.inlineScript;
     var body = swig.renderFile(__dirname + "/templates/header.html", {
       scripts: snip.js, css: snip.css});
@@ -33,7 +33,7 @@ snip.jsbin = function (req,res){
 
 // http://blog.codepen.io/documentation/api/prefill/
 snip.codepen = function(req,res){
-  snipEdit(req,res, function(snip){
+  snip.edit(req,res, function(snip){
     var js = snip.inlineScript;
     var body = swig.renderFile(__dirname + "/templates/header.html", {
       scripts: snip.js, css: snip.css});

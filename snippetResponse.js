@@ -3,8 +3,16 @@ module.change_code = 1;
 
 var snip = {};
 
-snip._demoFill = function (res, item){
-  item.inlineScript += ";if(parents !== undefined) {m.g.onAll(function(name,data){ parent.events.trigger.apply(this,arguments)})};";
+snip._demoFill = function (res, item, pkg){
+  var instance = pkg.latest.sniper.instance;
+  // TODO: experimental way to send events to the main window
+  if(instance !== undefined) {
+    item.inlineScript += ";if(parent !== undefined) { ";
+    item.inlineScript += instance + ".onAll(function(name,data){";
+    item.inlineScript += 'var obj = {name: name, data: data};'; 
+    item.inlineScript += 'parent.postMessage(obj, "*") })';
+    item.inlineScript += "};";
+  }
   res.render("single", {scripts: item.js, css: item.css, inlineScript: item.inlineScript, inlineBody: item.inlineBody});
 };
 

@@ -61,6 +61,7 @@ snip.edit = function(req, res, callback){
       for(var i in snip.css){
         snip.css[i]= snip.css[i].replace("/github/", global.ghProxy);
       }
+      snip.inlineScript = snip.inlineScript.replace("/github/", global.ghProxy);
       callback(snip);
     });
   });

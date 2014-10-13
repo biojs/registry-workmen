@@ -2,6 +2,7 @@ var express = require('express');
 var compress = require('compression');
 var swig = require("swig");
 var snip = require("./snippetHandler");
+global.ghProxy = "http://cdn.rawgit.com/"
 
 // cfg
 var port = process.env.PORT || process.argv[2] || 3000;

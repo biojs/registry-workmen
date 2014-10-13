@@ -55,6 +55,12 @@ snip.edit = function(req, res, callback){
       return;
     }
     loadSnippet({pkg: pkg[0], currentSnip: currentSnip, res: res}, function (snip){
+      for(var i in snip.js){
+        snip.js[i]= snip.js[i].replace("/github/", global.ghProxy);
+      }
+      for(var i in snip.css){
+        snip.css[i]= snip.css[i].replace("/github/", global.ghProxy);
+      }
       callback(snip);
     });
   });

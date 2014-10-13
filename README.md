@@ -41,11 +41,28 @@ If you want deploy access, ping @greenify - otherwise just send us a pull reques
 Available views
 --------------
 
-[`/all`](http://workmen.biojs.net/all)
+### Registry information
+
+[`/all`](http://workmen.biojs.net/all): JSON with all biojs packages
   
   
-  
-[`/detail/biojs-sniper`](http://workmen.biojs.net/detail/biojs-sniper)
+[`/detail/:name`](http://workmen.biojs.net/detail/biojs-sniper): info for only one BioJS packages
+
+#### Snippet pages
+
+[`/demo/:name`](http://workmen.biojs.net/demo/biojs-vis-msa): Listing of all available snippets
+
+[`/demo/:name/:snippet`](http://workmen.biojs.net/demo/biojs-vis-msa/msa_show_menu): Display the `:snippet`.
+
+#### Edit in JS editor
+
+Will forword you to the specific editors with the snippet.
+
+[`/jsbin/:name/:snippet`](http://workmen.biojs.net/jsbin/biojs-vis-msa/msa_show_menu)
+
+[`/codepen/:name/:snippet`](http://workmen.biojs.net/codepen/biojs-vis-msa/msa_show_menu)
+
+
 
 (see `server.js`)
 

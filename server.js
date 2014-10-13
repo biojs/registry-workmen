@@ -49,6 +49,7 @@ app.use(responseTime())
   app.get('/demo/:name', snip.overview);
   app.get('/jsbin/:name/:snip', snip.jsbin);
   app.get('/codepen/:name/:snip', snip.codepen);
+  app.get('/github/:name/:repo/*', snip.github);
 
   var Datastore = require('nedb');
 

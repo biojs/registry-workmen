@@ -1,6 +1,7 @@
 module.change_code = 1; // this allows hotswapping of code (ignored in production)
 
 var swig = require("swig");
+var request = require("request");
 var loadSnippet = require("./snippetDemo");
 var snipResponse = require("./snippetResponse");
 
@@ -80,6 +81,21 @@ snip.overview = function(req, res){
     }
     var snips = Object.keys(pkg.latest.sniper.srcs);
     res.render("list",{snips: snips, baseHref: baseURL}); 
+  });
+};
+
+// simple github proxy
+snip.github = function(req, res){
+  var name = req.params.name;
+  var repo = req.params.repo;
+  var path = req.params[0];
+  var url = "https://raw.githubusercontent.com/" + name + "/" + repo + "/" + 
+   path; 
+
+  // TODO: minify gzip
+  // TODO: cache locally
+  request.get(url, function (err, response, body) {
+    res.send(body);
   });
 };
 

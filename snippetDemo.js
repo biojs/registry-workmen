@@ -59,7 +59,7 @@ module.exports = function(obj, callback){
 
   // download snippets on-the-fly
   var ps = [];
-  if(typeof snip === "undefined" || snip.srcs[currentSnip] === undefined){
+  if(snip.srcs == undefined ||  snip.srcs[currentSnip] === undefined){
     console.log("no js file found" , currentSnip, snip.srcs[currentSnip]);  
     res.status(500).send("no js file found exist");  
     return;

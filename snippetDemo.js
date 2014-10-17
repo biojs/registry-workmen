@@ -9,7 +9,7 @@ module.exports = function(obj, callback){
   var pkg = obj.pkg;
   var snip = pkg.latest.sniper;
 
-  if(pkg.github == undefined){
+  if(pkg.github === undefined || snip.srcs === undefined){
     res.status(500).send("github repo does not exist");  
     return;
   }
@@ -59,8 +59,8 @@ module.exports = function(obj, callback){
 
   // download snippets on-the-fly
   var ps = [];
-  if(snip.srcs == undefined ||  snip.srcs[currentSnip] === undefined){
-    console.log("no js file found" , currentSnip, snip.srcs[currentSnip]);  
+  if(snip.srcs[currentSnip] === undefined){
+    console.log("no js file found" , currentSnip, snip.srcs);  
     res.status(500).send("no js file found exist");  
     return;
   }

@@ -35,6 +35,11 @@ module.exports = function(obj, callback){
   }
 
   function translateURL(obj, base){
+    // fix CDN urls
+    if(obj.substring(0,2) === "//"){
+      return "https:" + obj;
+
+    // translate root urls to github
     if(obj.charAt(0) === "/"){
       return base + obj;
     }

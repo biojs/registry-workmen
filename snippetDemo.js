@@ -80,6 +80,8 @@ module.exports = function(obj, callback){
     ps.push(new q.Promise(function(resolve,reject){
       request.get(jsURL, function (err, response, body) {
 
+        snip.inlineScript = "";
+
         // TODO: apply dirty hacks on the snippets
         // problem: access files from the snipper
         if(body.indexOf("./") >= 0){
@@ -88,7 +90,12 @@ module.exports = function(obj, callback){
           body = body.replace("./", htmlUrl);
         }
 
-        snip.inlineScript = body;
+        // inject yourDiv
+        if(snip.hasNoHTML){
+          snip.inlineScript = "var yourDiv = document.getElementById('yourDiv');\n";
+        }
+
+        snip.inlineScript += body;
         resolve();
       });
     }));
@@ -106,6 +113,7 @@ module.exports = function(obj, callback){
     }));
   }else{
     snip.inlineBody = "<div id=yourDiv></div>";
+    snip.hasNoHTML = true;
   }
 
   q.all(ps).then(function(){

@@ -7,12 +7,13 @@ snip._demoFill = function (res, item, pkg){
   var instance = pkg.latest.sniper.instance;
   // TODO: experimental way to send events to the main window
   if(pkg.events !== undefined) {
-    var head = ";if(parent !== undefined) { ";
-    var foot = ".onAll(function(name,data){";
+    //var head = ";if(parent !== undefined) { ";
+    var head = "";
+    var foot = ".on('all',function(name,data){";
     foot += 'var obj = {name: name, data: data};'; 
     //foot += 'obj = JSON.stringify(obj);'; 
     foot += 'parent.postMessage(obj, "*") })';
-    foot += "};";
+    //foot += "};";
   
     item.inlineScript = item.inlineScript.replace(/\/\/instance=([.a-zA-Z0-9_]+)/, head + "$1" + foot);
  }

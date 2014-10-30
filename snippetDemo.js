@@ -38,6 +38,7 @@ module.exports = function(obj, callback){
     // fix CDN urls
     if(obj.substring(0,2) === "//"){
       return "https:" + obj;
+    }
 
     // translate root urls to github
     if(obj.charAt(0) === "/"){

@@ -6,7 +6,7 @@ global.ghProxy = "http://cdn.rawgit.com/"
 
 // cfg
 var port = process.env.PORT || process.argv[2] || 3000;
-var refreshTime = process.env.REFRESH_TIME || 3600 * 60; // in ms
+var refreshTime = process.env.REFRESH_TIME || 3600; // in s
 
 // set swig in express
 var app = express();

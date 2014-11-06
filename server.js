@@ -1,6 +1,8 @@
 var express = require('express');
 var compress = require('compression');
 var swig = require("swig");
+var _ = require("underscore");
+
 var snip = require("./snippetHandler");
 global.ghProxy = "http://cdn.rawgit.com/"
 
@@ -72,8 +74,21 @@ function mainpage(req, res){
 // TODO: cleanup
 
 function all(req, res){
+  // attributes to keep in the short version
+  var props = ['created', 'description', 'dependencies', 'devDependencies',
+  'dist-tags', 'releases', 'version', 'versions', 'license', 'name', 'modified',
+  'npmDownloads', 'keywords', 'sniper', 'homepage','author', 'repository'];
+
   db().find().exec(function (err, pkgs) {
-    res.jsonp(pkgs);
+    // &short=1 gives only the abstract of every pkg
+    if(req.query.short !== undefined){
+      var pkgsSum = pkgs.map(function(el){
+        return _.pick(el,props);
+      });
+      res.jsonp(pkgsSum);
+    }else{
+      res.jsonp(pkgs);
+    };
   });
 };
 

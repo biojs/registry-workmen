@@ -88,6 +88,7 @@ module.exports = function(obj, callback){
           //var rawURL = "https://cors-anywhere.herokuapp.com/" + pkg.github.raw_url;
           var htmlUrl =  baseLocal + "/"+  snip.snippets[0] + "/";
           body = body.replace("./", htmlUrl);
+          body = body.replace("../", baseLocal);
         }
 
         // inject yourDiv

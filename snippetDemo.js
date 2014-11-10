@@ -95,7 +95,7 @@ module.exports = function(obj, callback){
         if(body.indexOf("./") >= 0){
           //var rawURL = "https://cors-anywhere.herokuapp.com/" + pkg.github.raw_url;
           var htmlUrl =  baseLocal + "/"+  snip.snippets[0] + "/";
-          body = body.replace("../", baseLocal);
+          body = body.replace("../", baseLocal + "/");
           body = body.replace("./", htmlUrl);
         }
 

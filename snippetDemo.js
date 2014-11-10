@@ -2,6 +2,8 @@ module.change_code = 1; // this allows hotswapping of code (ignored in productio
 
 var request = require("request");
 var q = require('rsvp');
+var browerifyCDN = "http://wzrd.in/bundle/"
+var _ = require("underscore");
 
 module.exports = function(obj, callback){
   var currentSnip = obj.currentSnip;
@@ -14,18 +16,24 @@ module.exports = function(obj, callback){
     return;
   }
 
+  // snip has extra config
+  if(snip.extra != undefined && snip.extra[currentSnip] != undefined){
+    // merge extra config
+    for(var key in snip.extra[currentSnip]){
+      snip[key] = _.uniq(_.union(snip[key], snip.extra[currentSnip][key]));
+    }
+  }
+
   // load browserified version
-  snip.js.push("http://wzrd.in/bundle/" + pkg.name + "@" + pkg.version);
+  snip.js.push( browerifyCDN + pkg.name + "@" + pkg.version);
 
   // expose other bundles
   if(snip.exposed !== undefined){
     for(var i=0;i<snip.exposed.length; i++){
-      snip.js.push("http://wzrd.in/bundle/" + snip.exposed[i] + "@latest");
+      snip.js.push(browerifyCDN + snip.exposed[i] + "@latest");
     }
   }
 
-
-  //var baseURL = convertGithubToRaw(pkg.github.html_url + "/" + pkg.github.default_branch);
   var baseLocal = convertGithubToRaw("/github/" + pkg.github.full_name + "/" + pkg.github.default_branch);
 
   // css
@@ -87,8 +95,8 @@ module.exports = function(obj, callback){
         if(body.indexOf("./") >= 0){
           //var rawURL = "https://cors-anywhere.herokuapp.com/" + pkg.github.raw_url;
           var htmlUrl =  baseLocal + "/"+  snip.snippets[0] + "/";
-          body = body.replace("./", htmlUrl);
           body = body.replace("../", baseLocal);
+          body = body.replace("./", htmlUrl);
         }
 
         // inject yourDiv

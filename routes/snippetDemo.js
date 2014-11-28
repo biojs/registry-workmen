@@ -1,7 +1,7 @@
 module.change_code = 1; // this allows hotswapping of code (ignored in production)
 
 var request = require("request");
-var q = require('rsvp');
+var q = require('bluebird');
 var browerifyCDN = "http://wzrd.in/bundle/"
 var _ = require("underscore");
 
@@ -25,7 +25,9 @@ module.exports = function(obj, callback){
   }
 
   // load browserified version
-  snip.js.push( browerifyCDN + pkg.name + "@" + pkg.version);
+  if(!snip.noBrowserify){
+    snip.js.push( browerifyCDN + pkg.name + "@" + pkg.version);
+  }
 
   // expose other bundles
   if(snip.exposed !== undefined){
@@ -89,16 +91,8 @@ module.exports = function(obj, callback){
       request.get(jsURL, function (err, response, body) {
 
         snip.inlineScript = "";
-
-        // TODO: apply dirty hacks on the snippets
-        // problem: access files from the snipper
-        if(body.indexOf("./") >= 0){
-          //var rawURL = "https://cors-anywhere.herokuapp.com/" + pkg.github.raw_url;
-          var htmlUrl =  baseLocal + "/"+  snip.snippets[0] + "/";
-          body = body.replace("../", baseLocal + "/");
-          body = body.replace("./", htmlUrl);
-        }
-
+        body = translateRelative(body,baseLocal,snip.snippets[0]);
+        
         // inject yourDiv
         if(snip.hasNoHTML){
           snip.inlineScript = "var yourDiv = document.getElementById('yourDiv');\n";
@@ -116,6 +110,7 @@ module.exports = function(obj, callback){
     var htmlURL = convertGithubToRaw(snip.srcs[currentSnip].html.html_url);
     ps.push(new q.Promise(function(resolve,reject){
       request.get(htmlURL, function (err, response, body) {
+        body = translateRelative(body,baseLocal,snip.snippets[0]);
         snip.inlineBody = body;
         resolve();
       });
@@ -128,6 +123,18 @@ module.exports = function(obj, callback){
   q.all(ps).then(function(){
     callback(snip);
   });
+}
+
+// TODO: apply dirty hacks on the snippets
+// problem: access files from the snipper
+function translateRelative(body, baseLocal, path){
+  if(body.indexOf("./") >= 0){
+    //var rawURL = "https://cors-anywhere.herokuapp.com/" + pkg.github.raw_url;
+    var htmlUrl =  baseLocal + "/"+ path + "/";
+    body = body.replace("../", baseLocal + "/");
+    body = body.replace("./", htmlUrl);
+  }
+  return body;
 }
 
 function convertGithubToRaw(contentURL){

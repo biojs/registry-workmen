@@ -2,107 +2,70 @@ var express = require('express');
 var compress = require('compression');
 var swig = require("swig");
 var _ = require("underscore");
+var responseTime = require('response-time')
 
-var snip = require("./snippetHandler");
-global.ghProxy = "http://cdn.rawgit.com/"
+
+var queries = require("./routes/queries");
+var snip = require("./routes/snippet");
+var wares = require("./lib/serverMiddleware");
 
 // cfg
 var port = process.env.PORT || process.argv[2] || 3000;
 var refreshTime = process.env.REFRESH_TIME || 3600; // in s
+//var keywords = ['biojs', 'bionode'];
+var keywords = ['biojs'];
 
-// set swig in express
+global.ghProxy = "http://cdn.rawgit.com/"
+
+// setup swig in express
 var app = express();
 app.engine('html', swig.renderFile);
 app.set('view engine', 'html');
 app.set('views', __dirname + '/templates');
 app.use(compress());
 
-//CORS middleware
-var allowCrossDomain = function(req, res, next) {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,DELETE');
-  res.header('Access-Control-Allow-Headers', 'Content-Type');
-  next();
-}
-app.use(allowCrossDomain);
+// workmen
 
-// custom powered by
-app.disable('x-powered-by', 'BioJS');
-app.use(function (req, res, next) {
-  res.setHeader("X-Powered-By", "BioJS");
-  next();
-});
+var workflow = require("./workflow");
 
-// cache the json on the client
-app.use(function (req, res, next) {
-  res.setHeader("Cache-Control", "public,max-age=3600"); // 60m (in s)
-  res.setHeader("Expires", new Date(Date.now() + 3600 * 1000).toUTCString()); // 1h (in ms)
-  next();
-});
+// set DB as global
+workflow.dbLoad.then(function(){
+  global.db = workflow.db; 
+})
 
-// response time
-  var responseTime = require('response-time')
+workflow.keys = keywords;
+workflow.run().then(function(){
+  console.log("load fii");
+})
+
+// TODO: make this more dynamic
+interval = setInterval(workflow.run, refreshTime * 1000);
+
+// middlewares
+app.use(wares.cors);
+app.disable('x-powered-by');
+app.use(wares.poweredBy);
+app.use(wares.cacheControl);
 app.use(responseTime())
 
-  // routes
-  app.get('/', mainpage);
-  app.get('/all', all);
-  app.get('/detail/:name', detail);
-  app.get('/demo/:name/:snip', snip.demo);
-  app.get('/demo/:name', snip.overview);
-  app.get('/jsbin/:name/:snip', snip.jsbin);
-  app.get('/codepen/:name/:snip', snip.codepen);
-  app.get('/github/:name/:repo/*', snip.github);
-
-  var Datastore = require('nedb');
-
-  var workmen = require("./lib/workmen");
-  runWorker = function(){
-    new workmen(function(pkg,dbNew){
-      // worker finished - reload db
-      console.log("reloading db");
-      global.db = db = dbNew; 
-    })
-  }
-runWorker();
-// TODO: make this dynamic
-interval = setInterval(runWorker, refreshTime * 1000);
-
-function mainpage(req, res){
+// routes
+app.get('/', function mainpage(req, res){
   res.sendFile("./README.md", {root: __dirname});
-};
-// TODO: cleanup
+});
+app.get('/all', queries.all);
+app.get('/detail/:name', queries.detail);
 
-function all(req, res){
-  // attributes to keep in the short version
-  var props = ['created', 'description', 'dependencies', 'devDependencies',
-  'dist-tags', 'releases', 'version', 'versions', 'license', 'name', 'modified',
-  'npmDownloads', 'keywords', 'sniper', 'homepage','author', 'repository'];
+// interactive
+app.get('/demo/:name/:snip', snip.demo);
+app.get('/demo/:name', snip.overview);
 
-  db().find().exec(function (err, pkgs) {
-    // &short=1 gives only the abstract of every pkg
-    if(req.query.short !== undefined){
-      var pkgsSum = pkgs.map(function(el){
-        return _.pick(el,props);
-      });
-      res.jsonp(pkgsSum);
-    }else{
-      res.jsonp(pkgs);
-    };
-  });
-};
+// forwarder
+app.get('/jsbin/:name/:snip', snip.jsbin);
+app.get('/codepen/:name/:snip', snip.codepen);
 
-function detail(req, res){
-  var name = req.params.name;
-  db().find({name: name}).exec(function (err, pkgs) {
-    if( pkgs.length == 0){
-      res.send({error: "does not exist"});
-      return;
-    }
-    var pkg = pkgs[0];
-    res.jsonp(pkg);
-  });
-};
+// proxies
+app.get('/github/:name/:repo/*', snip.github);
+
 
 var server = app.listen(port, function() {
   console.log('Listening on port %d', server.address().port);

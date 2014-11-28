@@ -1,4 +1,5 @@
 var queries = {};
+var _ = require("underscore");
 
 queries.all = function all(req, res){
   // attributes to keep in the short version
@@ -16,6 +17,15 @@ queries.all = function all(req, res){
       }else{
         res.jsonp(pkgs);
       };
+    });
+};
+
+
+queries.stat = function stat(req, res){
+    db.db().find().exec(function (err, pkgs) {
+        var stat = {};
+        stat.count = pkgs.length;
+        res.jsonp(stat);
     });
 };
 

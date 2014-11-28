@@ -38,6 +38,9 @@ Use
 A working instance can be browsed at `workmen.biojs.net`.
 If you want deploy access, ping @greenify - otherwise just send us a pull request here.
 
+![Workmen structure](https://raw.githubusercontent.com/biojs/biojs/master/registry_workmen/workmen_structure_2014_11.png)
+
+
 Available views
 --------------
 

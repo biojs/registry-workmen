@@ -10,6 +10,7 @@ module.exports = function(obj, callback){
   var res = obj.res;
   var pkg = obj.pkg;
   var snip = pkg.latest.sniper;
+  var noBrowserify = !snip.noBrowserify || pkg.name != "apinatomy-core";
 
   if(pkg.github === undefined || snip.srcs === undefined){
     res.status(500).send("github repo does not exist");  
@@ -25,7 +26,7 @@ module.exports = function(obj, callback){
   }
 
   // load browserified version
-  if(!snip.noBrowserify){
+  if(!noBrowserify){
     snip.js.push( browerifyCDN + pkg.name + "@" + pkg.version);
   }
 
@@ -83,6 +84,12 @@ module.exports = function(obj, callback){
 
   // js
   snip.inlineScript = "";
+
+  // TODO: dirty hack to get apinatomy working
+  if(noBrowserify){
+    snip.srcs[currentSnip].js = undefined;
+  }
+
   if(snip.srcs[currentSnip].js === undefined){
     console.log("no js file found" , currentSnip, snip.srcs[currentSnip]);  
   }else{

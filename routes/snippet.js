@@ -2,8 +2,9 @@ module.change_code = 1; // this allows hotswapping of code (ignored in productio
 
 var swig = require("swig");
 var request = require("request");
-var loadSnippet = require("./snippetDemo");
-var snipResponse = require("./snippetResponse");
+var loadSnippet = require("./snippets/demo.js");
+var snipResponse = require("./snippets/response.js");
+var join = require("path").join;
 
 var snip = {};
 
@@ -19,9 +20,11 @@ snip.demo  = function (req, res){
     }
     var pkg = pkgs[0];
     // if there is a file extension - we probably want to load it from github
+    // TODO: distinguish between multiple folders
     if(hasExtension){
       if(pkg.repository != undefined && pkg.repository.github != undefined){
-        serveGithubFile(pkg.repository.github, currentSnip, res)
+        // TOOD: use default github branch
+        serveGithubFile(pkg.repository.github, join("master",pkg.latest.sniper.snippets[0],currentSnip), res)
       }else{
         console.log("nr github repository found");
       }
@@ -111,9 +114,8 @@ snip.github = function(req, res){
 function serveGithubFile(pkg,path,res){
   // TODO: minify gzip
   // TODO: cache locally
-  console.log("serving github file", pkg);
-  var url = "https://raw.githubusercontent.com/" + pkg.user + "/" + pkg.repo + "/" + 
-   path; 
+  console.log("serving github file", pkg , path);
+  var url = "https://raw.githubusercontent.com/" + pkg.user + "/" + pkg.repo + "/" + path; 
   request.get(url, function (err, response, body) {
     res.send(body);
   });

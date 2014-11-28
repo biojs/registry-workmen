@@ -12,8 +12,7 @@ var wares = require("./lib/serverMiddleware");
 // cfg
 var port = process.env.PORT || process.argv[2] || 3000;
 var refreshTime = process.env.REFRESH_TIME || 3600; // in s
-//var keywords = ['biojs', 'bionode'];
-var keywords = ['biojs'];
+var keywords = ['biojs', 'bionode'];
 
 global.ghProxy = "http://cdn.rawgit.com/"
 
@@ -35,7 +34,7 @@ workflow.dbLoad.then(function(){
 
 workflow.keys = keywords;
 workflow.run().then(function(){
-  console.log("load fii");
+  console.log(".saved.");
 })
 
 // TODO: make this more dynamic

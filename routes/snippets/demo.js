@@ -10,7 +10,7 @@ module.exports = function(obj, callback){
   var res = obj.res;
   var pkg = obj.pkg;
   var snip = pkg.latest.sniper;
-  var noBrowserify = !snip.noBrowserify || pkg.name != "apinatomy-core";
+  var noBrowserify = snip.noBrowserify || pkg.name == "apinatomy-core";
 
   if(pkg.github === undefined || snip.srcs === undefined){
     res.status(500).send("github repo does not exist");  

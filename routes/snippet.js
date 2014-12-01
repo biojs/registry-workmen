@@ -40,7 +40,7 @@ snip.demo  = function (req, res){
 snip.jsbin = function (req,res){
   snip.edit(req,res, function(snip){
     var js = snip.inlineScript;
-    var body = swig.renderFile(__dirname + "/templates/header.html", {
+    var body = swig.renderFile(__dirname + "/../templates/header.html", {
       scripts: snip.js, css: snip.css});
     body += "\n" +snip.inlineBody;
     res.render("jsbin", {html: body, js: js, redirectURL: "http://jsbin.com?js,output"});
@@ -51,7 +51,7 @@ snip.jsbin = function (req,res){
 snip.codepen = function(req,res){
   snip.edit(req,res, function(snip){
     var js = snip.inlineScript;
-    var body = swig.renderFile(__dirname + "/templates/header.html", {
+    var body = swig.renderFile(__dirname + "/../templates/header.html", {
       scripts: snip.js, css: snip.css});
     body += "\n" +snip.inlineBody;
     var obj = { js: js, html: body};

@@ -57,6 +57,7 @@ app.get('/detail/:name', queries.detail);
 
 // interactive
 app.get('/demo/:name/:snip', snip.demo);
+app.get('/demo/:name/:snip/*', snip.demo);
 app.get('/demo/:name', snip.overview);
 
 // forwarder

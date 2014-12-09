@@ -11,10 +11,11 @@ var snip = {};
 snip.demo  = function (req, res){
   var name = req.params.name;
   var currentSnip = req.params.snip;
-  var hasExtension = currentSnip.indexOf(".") >= 0;
+  var additionalPath = req.params[0];
+  var hasExtension = currentSnip.indexOf(".") >= 0 || additionalPath !== undefined;
 
   global.db.db().find({name: name}).exec(function (err, pkgs) {
-    if(pkgs.length == 0 || pkgs[0].latest.sniper == undefined){
+    if(pkgs.length === 0 || pkgs[0].latest.sniper === undefined){
       res.send({error: "no snips"});
       return;
     }
@@ -22,11 +23,11 @@ snip.demo  = function (req, res){
     // if there is a file extension - we probably want to load it from github
     // TODO: distinguish between multiple folders
     if(hasExtension){
-      if(pkg.repository != undefined && pkg.repository.github != undefined){
+      if(pkg.repository !== undefined && pkg.repository.github !== undefined){
         // TOOD: use default github branch
-        serveGithubFile(pkg.repository.github, join("master",pkg.latest.sniper.snippets[0],currentSnip), res)
+        serveGithubFile(pkg.repository.github, join("master",pkg.latest.sniper.snippets[0],currentSnip,additionalPath), res);
       }else{
-        console.log("nr github repository found");
+        console.log("no github repository found");
       }
     }else{
       loadSnippet({pkg: pkg, currentSnip: currentSnip,res:res}, function (item){

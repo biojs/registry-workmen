@@ -5,7 +5,7 @@ queries.all = function all(req, res){
   // attributes to keep in the short version
   var props = ['created', 'description', 'dependencies', 'devDependencies',
     'dist-tags', 'releases', 'version', 'versions', 'license', 'name', 'modified',
-    'npmDownloads', 'keywords', 'stars', 'homepage','author', 'repository', 'biojs'];
+    'npmDownloads', 'keywords', 'stars', 'homepage','author', 'repository'];
 
     db.db().find().exec(function (err, pkgs) {
       // &short=1 gives only the abstract of every pkg
@@ -14,6 +14,7 @@ queries.all = function all(req, res){
           var pi = _.pick(el,props);
           pi.latest = {};
           pi.latest.sniper = el.latest.sniper;
+          pi.latest.biojs = el.latest.biojs;
           pi.github = {};
           pi.github = _.pick(el.github, ['stargazers_count', 'avatar_url', 'owner']);
           return pi;

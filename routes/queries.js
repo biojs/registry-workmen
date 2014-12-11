@@ -5,7 +5,7 @@ queries.all = function all(req, res){
   // attributes to keep in the short version
   var props = ['created', 'description', 'dependencies', 'devDependencies',
     'dist-tags', 'releases', 'version', 'versions', 'license', 'name', 'modified',
-    'npmDownloads', 'keywords', 'stars', 'homepage','author', 'repository'];
+    'npmDownloads', 'keywords', 'stars', 'homepage','author', 'repository', 'biojs'];
 
     db.db().find().exec(function (err, pkgs) {
       // &short=1 gives only the abstract of every pkg

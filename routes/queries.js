@@ -16,7 +16,7 @@ queries.all = function all(req, res){
           pi.latest.sniper = el.latest.sniper;
           pi.latest.biojs = el.latest.biojs;
           pi.github = {};
-          pi.github = _.pick(el.github, ['stargazers_count', 'avatar_url', 'owner']);
+          pi.github = _.pick(el.github, ['stargazers_count', 'avatar_url', 'owner', 'raw_url']);
           return pi;
         });
         res.jsonp(pkgsSum);

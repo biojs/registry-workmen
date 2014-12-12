@@ -25,7 +25,11 @@ snip.demo  = function (req, res){
     if(hasExtension){
       if(pkg.repository !== undefined && pkg.repository.github !== undefined){
         // TOOD: use default github branch
-        serveGithubFile(pkg.repository.github, join("master",pkg.latest.sniper.snippets[0],currentSnip,additionalPath), res);
+        var snippetPath = currentSnip;
+        if(additionalPath !== undefined){
+          snippetPath = join(currentSnip,additionalPath);
+        }
+        serveGithubFile(pkg.repository.github, join("master",pkg.latest.sniper.snippets[0], snippetPath), res);
       }else{
         console.log("no github repository found");
       }

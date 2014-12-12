@@ -1,8 +1,7 @@
 var express = require('express');
 var compress = require('compression');
 var swig = require("swig");
-var _ = require("underscore");
-var responseTime = require('response-time')
+var responseTime = require('response-time');
 
 
 var queries = require("./routes/queries");
@@ -14,7 +13,7 @@ var port = process.env.PORT || process.argv[2] || 3000;
 var refreshTime = process.env.REFRESH_TIME || 3600; // in s
 var keywords = ['biojs', 'bionode'];
 
-global.ghProxy = "http://cdn.rawgit.com/"
+global.ghProxy = "http://cdn.rawgit.com/";
 
 // setup swig in express
 var app = express();
@@ -30,22 +29,23 @@ var workflow = require("./workflow");
 // set DB as global
 workflow.dbLoad.then(function(){
   global.db = workflow.db; 
-})
+});
 
 workflow.keys = keywords;
 workflow.run().then(function(){
   console.log(".saved.");
-})
+});
 
 // TODO: make this more dynamic
-interval = setInterval(workflow.run, refreshTime * 1000);
+var interval = setInterval(workflow.run, refreshTime * 1000);
 
 // middlewares
 app.use(wares.cors);
 app.disable('x-powered-by');
 app.use(wares.poweredBy);
 app.use(wares.cacheControl);
-app.use(responseTime())
+app.use(responseTime());
+app.use(wares.checkDB);
 
 // routes
 app.get('/', function mainpage(req, res){

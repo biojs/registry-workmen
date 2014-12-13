@@ -20,10 +20,13 @@
       "url": "https://github.com/biojs/biojs-registry-workmen/blob/master/LICENSE"
     }
   ],
-  "main": "lib/biojs-registry-workmen",
+  "main": "server.js",
   "engines": {
     "node": ">= 0.10.26",
     "npm": ">=1.4.3"
+  },
+  "bin": {
+    "registry-workmen": "server.js"
   },
   "scripts": {
     "test": "./node_modules/gulp/bin/gulp.js gulp test",

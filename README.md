@@ -1,36 +1,27 @@
 registry-workmen
 ================
 
-A rewrite of the BioJS registry.
+The BioJS registry backend.
 
 Workflow
 ---------
 
-1. Search for all packages with a special tag on npm ('biojs', bionode')
-1b. Remove duplicate packages (uniq)
-2. Send package event `single` to all listeners
-2.1) Query npm
-2.1.a) package.json
-2.1.b) history stats
-2.2). Query github
-2.2.a) repo info
-2.2.b).  Optional: Query github for snippets
-3. Wait for the `done` events of all listeners for all packages
-4. Store the result in a DB
+1) Search for all packages with a special tag on npm ('biojs', bionode')  + remove duplicate packages (uniq)  
+2) Query npm -> package.json  
+3) Run extensions
+3.1) npm: history stats  
+3.2) github  
+3.2.1) github info
+3.2.2) github stats
+3.2.3) Optional: Query github for snippets  (ls "snippets")
+3.2.4) Optional: Query for `events.json`
+4) Run post processing (e.g. removal of duplicate keywords)
+5) Store the result in a DB
 
 Currently the db is cleaned on every run.
 
-Future
--------
+(see workflow.js)
 
-Avoid duplicate requests by using the existing DB at the beginning and cache.
-
-Install
--------
-
-```
-npm install
-```
 
 Use
 ----
@@ -40,6 +31,11 @@ If you want deploy access, ping @greenify - otherwise just send us a pull reques
 
 ![Workmen structure](https://raw.githubusercontent.com/biojs/biojs/master/registry_workmen/workmen_structure_2014_11.png)
 
+Cronjobs
+----------
+
+* check for package version: 60 seconds
+* refresh all packages: 60 minutes
 
 Available views
 --------------
@@ -57,7 +53,7 @@ Available views
 
 [`/demo/:name/:snippet`](http://workmen.biojs.net/demo/biojs-vis-msa/msa_show_menu): Display the `:snippet`.
 
-#### Edit in JS editor
+#### Edit in a online JS editor
 
 Will forword you to the specific editors with the snippet.
 
@@ -66,30 +62,19 @@ Will forword you to the specific editors with the snippet.
 [`/codepen/:name/:snippet`](http://workmen.biojs.net/codepen/biojs-vis-msa/msa_show_menu)
 
 
-
 (see `server.js`)
 
 
-Write an extension
--------------------
-
-It consists of two steps
-
-1) subscribe to package events `on("single, ..);
-2) broadcast your status once you are done `.trigger("done",pkg);`
+Install
+-------
 
 ```
-var ghClient = function(info){
-  var self = this;
-
-  // subscribe to package events
-  this.info.on("single", this.query);
-
-  // broadcast the done status once you finished downloading all resources
-  this.query = function(pkg) { 
-    self.info.trigger("done", pkg);
-  }
+git clone https://github.com/biojs/registry-workmen
+cd registry-workmen
+npm install
 ```
+
+You might need to setup github API credentials (see below).
 
 Run
 ----
@@ -99,6 +84,16 @@ node server.js
 ```
 
 (will be running on [Port 3000](http://localhost:3000))
+
+
+Write an extension
+-------------------
+
+Two requirements
+
+1) Return a promise
+2) Add your extension to "downloadPkg" in `workflow.js`
+
 
 Creds for github
 ------

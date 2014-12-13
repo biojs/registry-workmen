@@ -6,16 +6,16 @@ A rewrite of the BioJS registry.
 Workflow
 ---------
 
-1. Search for all packages with a special tag on npm ('biojs', bionode')
-1b. Remove duplicate packages (uniq)
-2. Send package event `single` to all listeners
-2.1) Query npm
-2.1.a) package.json
-2.1.b) history stats
-2.2). Query github
-2.2.a) repo info
-2.2.b).  Optional: Query github for snippets
-3. Wait for the `done` events of all listeners for all packages
+1. Search for all packages with a special tag on npm ('biojs', bionode')  
+1b. Remove duplicate packages (uniq)  
+2. Send package event `single` to all listeners  
+2.1) Query npm  
+2.1.a) package.json  
+2.1.b) history stats  
+2.2). Query github  
+2.2.a) repo info  
+2.2.b).  Optional: Query github for snippets  
+3. Wait for the `done` events of all listeners for all packages  
 4. Store the result in a DB
 
 Currently the db is cleaned on every run.

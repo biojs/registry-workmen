@@ -10,8 +10,9 @@ var wares = require("./lib/serverMiddleware");
 
 // cfg
 var port = process.env.PORT || process.argv[2] || 3000;
-var refreshTime = process.env.REFRESH_TIME || 3600; // in s
-var keywords = ['biojs', 'bionode'];
+var opts = {};
+opts.refreshTime = process.env.REFRESH_TIME || 3600; // in s
+opts.keys = ['biojs', 'bionode'];
 
 global.ghProxy = "http://cdn.rawgit.com/";
 
@@ -25,19 +26,16 @@ app.use(compress());
 // workmen
 
 var workflow = require("./workflow");
+var flow = new workflow(opts);
 
 // set DB as global
-workflow.dbLoad.then(function(){
-  global.db = workflow.db; 
+flow.dbLoad.then(function(){
+  global.db = flow.db; 
 });
 
-workflow.keys = keywords;
-workflow.run().then(function(){
+flow.start().then(function(){
   console.log(".saved.");
 });
-
-// TODO: make this more dynamic
-var interval = setInterval(workflow.run, refreshTime * 1000);
 
 // middlewares
 app.use(wares.cors);

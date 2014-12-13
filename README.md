@@ -1,7 +1,7 @@
 registry-workmen
 ================
 
-A rewrite of the BioJS registry.
+The BioJS registry backend.
 
 Workflow
 ---------
@@ -20,10 +20,8 @@ Workflow
 
 Currently the db is cleaned on every run.
 
-Future
--------
+(see workflow.js)
 
-Avoid duplicate requests by using the existing DB at the beginning and cache.
 
 Install
 -------
@@ -40,6 +38,11 @@ If you want deploy access, ping @greenify - otherwise just send us a pull reques
 
 ![Workmen structure](https://raw.githubusercontent.com/biojs/biojs/master/registry_workmen/workmen_structure_2014_11.png)
 
+Cronjobs
+----------
+
+* check for package version: 60 seconds
+* refresh all packages: 60 minutes
 
 Available views
 --------------
@@ -57,7 +60,7 @@ Available views
 
 [`/demo/:name/:snippet`](http://workmen.biojs.net/demo/biojs-vis-msa/msa_show_menu): Display the `:snippet`.
 
-#### Edit in JS editor
+#### Edit in a online JS editor
 
 Will forword you to the specific editors with the snippet.
 
@@ -66,30 +69,17 @@ Will forword you to the specific editors with the snippet.
 [`/codepen/:name/:snippet`](http://workmen.biojs.net/codepen/biojs-vis-msa/msa_show_menu)
 
 
-
 (see `server.js`)
 
 
 Write an extension
 -------------------
 
-It consists of two steps
+Two requirements
 
-1) subscribe to package events `on("single, ..);
-2) broadcast your status once you are done `.trigger("done",pkg);`
+1) Return a promise
+2) Add your extension to "downloadPkg" in `workflow.js`
 
-```
-var ghClient = function(info){
-  var self = this;
-
-  // subscribe to package events
-  this.info.on("single", this.query);
-
-  // broadcast the done status once you finished downloading all resources
-  this.query = function(pkg) { 
-    self.info.trigger("done", pkg);
-  }
-```
 
 Run
 ----

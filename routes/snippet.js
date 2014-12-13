@@ -75,13 +75,15 @@ snip.edit = function(req, res, callback){
       return;
     }
     loadSnippet({pkg: pkg[0], currentSnip: currentSnip, res: res}, function (snip){
+      var githubRegex = /\/github\//g;
       for(var i in snip.js){
-        snip.js[i]= snip.js[i].replace("/github/", global.ghProxy);
+        snip.js[i]= snip.js[i].replace(githubRegex, global.ghProxy);
       }
       for(var i in snip.css){
-        snip.css[i]= snip.css[i].replace("/github/", global.ghProxy);
+        snip.css[i]= snip.css[i].replace(githubRegex, global.ghProxy);
       }
-      snip.inlineScript = snip.inlineScript.replace("/github/", global.ghProxy);
+      snip.inlineScript = snip.inlineScript.replace(githubRegex, global.ghProxy);
+      snip.inlineBody = snip.inlineBody.replace(githubRegex, global.ghProxy);
       callback(snip);
     });
   });

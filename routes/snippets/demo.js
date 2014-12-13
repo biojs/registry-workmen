@@ -138,8 +138,8 @@ function translateRelative(body, baseLocal, path){
   if(body.indexOf("./") >= 0){
     //var rawURL = "https://cors-anywhere.herokuapp.com/" + pkg.github.raw_url;
     var htmlUrl =  baseLocal + "/"+ path + "/";
-    body = body.replace("../", baseLocal + "/");
-    body = body.replace("./", htmlUrl);
+    body = body.replace(/\.\.\//g, baseLocal + "/");
+    body = body.replace(/\.\//g, htmlUrl);
   }
   return body;
 }

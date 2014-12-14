@@ -7,7 +7,9 @@ queries.all = function all(req, res) {
   db.db().find().exec(function(err, pkgs) {
     // &short=1 gives only the abstract of every pkg
     if (req.query.short !== undefined) {
-      var pkgsSum = pkgs.map(limitPackage);
+      var pkgsSum = pkgs.map(function(pkg){
+        return limitPackage(pkg, defaultProps);
+      });
       res.jsonp(pkgsSum);
     } else {
       res.jsonp(pkgs);

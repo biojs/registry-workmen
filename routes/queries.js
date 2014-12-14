@@ -72,7 +72,7 @@ function limitPackage(pkg, props) {
   // TODO: remove unnecessary stuff
   pi.github = _.pick(pkg.github, ['stargazers_count', 'owner', 'raw_url',
     'subscribers_count', 'forks_count', 'open_issues_count', 'contributors',
-    'default_branch', 'full_name'
+    'default_branch', 'full_name', 'commits'
   ]);
   pi.github.owner = _.pick(pi.github.owner, ['avatar_url', 'html_url']);
   return pi;

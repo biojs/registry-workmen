@@ -5,7 +5,7 @@ queries.all = function all(req, res){
   // attributes to keep in the short version
   var props = ['created', 'description', 'dependencies', 'devDependencies',
     'dist-tags', 'releases', 'version', 'versions', 'license', 'name', 'modified',
-    'npmDownloads', 'keywords', 'stars', 'homepage','author', 'repository'];
+    'npmDownloads', 'keywords', 'stars', 'homepage','author', 'repository', 'contributors'];
 
     db.db().find().exec(function (err, pkgs) {
       // &short=1 gives only the abstract of every pkg
@@ -16,7 +16,9 @@ queries.all = function all(req, res){
           pi.latest.sniper = el.latest.sniper;
           pi.latest.biojs = el.latest.biojs;
           pi.github = {};
-          pi.github = _.pick(el.github, ['stargazers_count', 'avatar_url', 'owner', 'raw_url']);
+          // TODO: remove unnecessary stuff
+          pi.github = _.pick(el.github, ['stargazers_count', 'owner', 'raw_url', 'subscribers_count', 'forks_count', 'open_issues_count', 'contributors', 'default_branch', 'full_name']);
+          pi.github.owner = _.pick(pi.github.owner, ['avatar_url', 'html_url']);
           return pi;
         });
         res.jsonp(pkgsSum);

@@ -51,6 +51,7 @@ app.get('/', function mainpage(req, res){
 });
 app.get('/all', queries.all);
 app.get('/stat', queries.stat);
+app.get('/search', queries.search);
 app.get('/detail/:name', queries.detail);
 
 // interactive

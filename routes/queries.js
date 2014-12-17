@@ -50,7 +50,7 @@ queries.search = function search(req, res) {
   orderDict[orderBy] = orderDirection;
 
   var props = ['created', 'description', 'releases', 'version', 'license', 'name', 'modified',
-    'npmDownloads', 'keywords', 'stars', 'homepage', 'author', 'repository', 'contributors'
+    'npmDownloads', 'npmDownloadsLastWeek', 'keywords', 'stars', 'homepage', 'author', 'repository', 'contributors'
   ];
   db.db().find().sort(orderDict).limit(limit).exec(function(err, pkgs) {
     var pkgsSum = pkgs.map(function(pkg) {
@@ -62,7 +62,7 @@ queries.search = function search(req, res) {
 
 // attributes to keep in the short version
 var defaultProps = ['created', 'description', 'dependencies', 'devDependencies',
-  'dist-tags', 'releases', 'version', 'versions', 'license', 'name', 'modified',
+  'dist-tags', 'releases', 'version', 'versions', 'license', 'name', 'modified', 'npmDownloadsLastWeek',
   'npmDownloads', 'keywords', 'stars', 'homepage', 'author', 'repository', 'contributors'
 ];
 

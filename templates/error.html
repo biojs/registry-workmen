@@ -1,0 +1,28 @@
+Sorry, something went wrong the BioJS registry. <br><br>
+
+Please <a href="https://github.com/biojs/registry-workmen/issues" > report an issue</a> if this error persists.
+
+<h3> Error message: </h3>
+
+{{ msg }}
+
+<h3> Possible errors: </h3>
+
+<ul>
+{% for error in errors %}
+<li> {{ error }} </li>
+{% endfor %}
+</ul>
+
+<h3> Detailed debug info: </h3>
+
+
+{% for debug in detail %}
+
+<h4> {{loop.key}} </h4>
+
+<pre>
+{{ debug }}
+</pre>
+
+{% endfor %}

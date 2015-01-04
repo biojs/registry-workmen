@@ -20,6 +20,7 @@ var workflow = function(opts) {
   this.updateInterval = opts.updateInterval || 60;
   this.db = new database();
   this.dbLoad = this.db.load();
+  this.pkgs = [];
 };
 
 workflow.prototype.start = function() {
@@ -68,8 +69,11 @@ workflow.prototype.postDownload = function(pkg) {
   return q.all(ps).then(function() {
     return postProcessor(pkg, postOpts);
   }).catch(function(err) {
-    if (err.name !== "queryEvents") {
+    if (err != undefined && err.name !== "queryEvents") {
+      // event errors can happen - ignore them
       console.log("downloaderr", err);
+    }else{
+      console.log(arguments);
     }
     return pkg;
   });
@@ -77,7 +81,7 @@ workflow.prototype.postDownload = function(pkg) {
 
 // update a single pkg
 workflow.prototype.updatePkg = function(pkg) {
-  this.downloadPkg(pkg).then(function(newPkg) {
+  return this.downloadPkg(pkg).then(function(newPkg) {
     var index = _.indexOf(_.pluck(this.pkgs, "name"), newPkg.name);
     this.pkgs[index] = newPkg;
     this.db.updatePkg(newPkg);

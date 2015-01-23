@@ -1,7 +1,6 @@
 var q = require('bluebird');
 var registry = require("npm-registry");
 var _ = require('underscore');
-var npm = new registry();
 
 var database = require("./lib/database.js");
 
@@ -21,6 +20,9 @@ var workflow = function(opts) {
   this.db = new database();
   this.dbLoad = this.db.load();
   this.pkgs = [];
+  this.npm = new registry({
+    registry: opts.registryURL
+  });
 };
 
 workflow.prototype.start = function() {
@@ -33,11 +35,14 @@ workflow.prototype.start = function() {
 // 1) download package list
 workflow.prototype.run = function run() {
   var self = this;
-  return keywords(this.keys, npm).map(this.downloadPkg.bind(this)).then(function(pkgs) {
+  return keywords(this.keys, this.npm).map(this.downloadPkg.bind(this)).then(function(pkgs) {
     // on succes:  save to DB 
     console.log("workflow: trying to save into DB.");
-    self.pkgs = pkgs.map(function(el){
-     return {name: el.name, version: el.version}; 
+    self.pkgs = pkgs.map(function(el) {
+      return {
+        name: el.name,
+        version: el.version
+      };
     });
     self.dbLoad
       .then(self.db.loadCache.bind(self.db))
@@ -55,7 +60,7 @@ workflow.prototype.downloadPkg = function(name) {
   if (name.name !== undefined) {
     name = name.name;
   }
-  return new npmClient(name, npm).then(this.postDownload.bind(this));
+  return new npmClient(name, this.npm).then(this.postDownload.bind(this));
 };
 
 // 3) other info
@@ -72,7 +77,7 @@ workflow.prototype.postDownload = function(pkg) {
     if (err != undefined && err.name !== "queryEvents") {
       // event errors can happen - ignore them
       console.log("downloaderr", err);
-    }else{
+    } else {
       console.log(arguments);
     }
     return pkg;
@@ -96,7 +101,7 @@ workflow.prototype.updatePkg = function(pkg) {
 workflow.prototype.updateCronJob = function updateCronJob() {
   var self = this;
   this.pkgs.forEach(function(oldPkg) {
-    return new npmClient(oldPkg.name + "@latest", npm).then(function(newPkg) {
+    return new npmClient(oldPkg.name + "@latest", this.npm).then(function(newPkg) {
       // we have only the latest version -> download entire package
       if (oldPkg.version !== newPkg.version && newPkg.name !== undefined) {
         console.log("new package uploaded: ", newPkg.name);

@@ -44,7 +44,7 @@
     "mongodb": "^1.4.14",
     "mquery": "^1.2.0",
     "nedb": "^0.11.1",
-    "npm-keywords": "^1.0.2",
+    "npm-keywords": "^1.0.3",
     "npm-registry": "^0.1.11",
     "request": "^2.44.0",
     "response-time": "^2.2.0",

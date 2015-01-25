@@ -101,10 +101,10 @@ workflow.prototype.updatePkg = function(pkg) {
 workflow.prototype.updateCronJob = function updateCronJob() {
   var self = this;
   this.pkgs.forEach(function(oldPkg) {
-    return new npmClient(oldPkg.name + "@latest", this.npm).then(function(newPkg) {
+    return new npmClient(oldPkg.name + "@latest", self.npm).then(function(newPkg) {
       // we have only the latest version -> download entire package
-      if (oldPkg.version !== newPkg.version && newPkg.name !== undefined) {
-        console.log("new package uploaded: ", newPkg.name);
+      if (oldPkg.version != newPkg.version && newPkg.name != undefined) {
+        console.log("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
         self.updatePkg(newPkg.name);
       }
     }.bind(this));

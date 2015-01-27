@@ -1,7 +1,7 @@
 <form id="redirect_form" method="post" action="{{ redirectURL }}">
 <input type="hidden" name="description" value="{{ description}}">
 {% for tag in tags %}
-<input type="hidden" name="tags[{{ (loop.index - 1)}}]" value="{{ tags}}">
+<input type="hidden" name="tags[{{ (loop.index - 1)}}]" value="{{ tag}}">
 {% endfor %}
 <input type="hidden" name="files[main.js]" value="{{ files.js}}">
 <input type="hidden" name="files[index.html]" value="{{ files.html }}">

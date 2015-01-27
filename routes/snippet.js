@@ -95,6 +95,31 @@ snip.codepen = function(req, res) {
   });
 }
 
+// https://github.com/angular/angular.js/issues/7166
+snip.plunker = function(req, res) {
+  snip.edit(req, res, function(snp) {
+    var js = snp.inlineScript;
+    var body = swig.renderFile(__dirname + "/../templates/header.html", {
+      scripts: snp.js,
+      css: snp.css
+    });
+    body += "\n" + snp.inlineBody;
+    body += "\n<script src='main.js'></script>";
+    var files = {
+      js: js,
+      html: body
+    };
+    res.render("plunker", {
+      files: files,
+      description: "A BioJS example",
+      tags: ["biojs", snp.name],
+      redirectURL: "http://plnkr.co/edit/"
+    });
+  });
+}
+
+
+
 snip.edit = function(req, res, callback) {
   var name = req.params.name;
   var currentSnip = req.params.snip;
@@ -111,17 +136,17 @@ snip.edit = function(req, res, callback) {
       pkg: pkg[0],
       currentSnip: currentSnip,
       res: res
-    }, function(snip) {
+    }, function(snp) {
       var githubRegex = /\/github\//g;
-      for (var i in snip.js) {
-        snip.js[i] = snip.js[i].replace(githubRegex, global.ghProxy);
+      for (var i in snp.js) {
+        snp.js[i] = snp.js[i].replace(githubRegex, global.ghProxy);
       }
-      for (var i in snip.css) {
-        snip.css[i] = snip.css[i].replace(githubRegex, global.ghProxy);
+      for (var i in snp.css) {
+        snp.css[i] = snp.css[i].replace(githubRegex, global.ghProxy);
       }
-      snip.inlineScript = snip.inlineScript.replace(githubRegex, global.ghProxy);
-      snip.inlineBody = snip.inlineBody.replace(githubRegex, global.ghProxy);
-      callback(snip);
+      snp.inlineScript = snp.inlineScript.replace(githubRegex, global.ghProxy);
+      snp.inlineBody = snp.inlineBody.replace(githubRegex, global.ghProxy);
+      callback(snp);
     });
   });
 }

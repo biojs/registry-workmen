@@ -61,8 +61,9 @@ app.get('/demo/:name/:snip/*', snip.demo);
 app.get('/demo/:name', snip.overview);
 
 // forwarder
-app.get('/jsbin/:name/:snip', snip.jsbin);
 app.get('/codepen/:name/:snip', snip.codepen);
+app.get('/jsbin/:name/:snip', snip.jsbin);
+app.get('/plunker/:name/:snip', snip.plunker);
 
 // proxies
 app.get('/github/:name/:repo/*', snip.github);

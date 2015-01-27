@@ -1,8 +1,6 @@
 <meta charset="UTF-8">
-{% for link in css %}
-	<link type="text/css" rel="stylesheet" href="{{ link }}">
+{% for link in css %}<link type="text/css" rel="stylesheet" href="{{ link }}">
 {% endfor %}
 
-{% for script in scripts  %}
-	<script src="{{ script }}"></script>
+{% for script in scripts  %}<script src="{{ script }}"></script>
 {% endfor %}

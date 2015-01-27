@@ -11,6 +11,9 @@ module.exports = function(obj, callback) {
   var res = obj.res;
   var pkg = obj.pkg;
   var snip = pkg.latest.sniper;
+
+  snip.name = pkg.name;
+
   // dirty hack to avoid browserify for apinatomy
   var noBrowserify = snip.noBrowserify || pkg.name === "apinatomy-core";
 

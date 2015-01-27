@@ -2,7 +2,6 @@ module.change_code = 1; // this allows hotswapping of code (ignored in productio
 
 var request = require("request");
 var q = require('bluebird');
-var browerifyCDN = "http://wzrd.in/bundle/";
 var _ = require("underscore");
 var errors = require("../errors.js");
 
@@ -36,13 +35,13 @@ module.exports = function(obj, callback) {
 
   // load browserified version
   if (!noBrowserify) {
-    snip.js.push(browerifyCDN + pkg.name + "@" + pkg.version);
+    snip.js.push(global.browerifyCDN + pkg.name + "@" + pkg.version);
   }
 
   // expose other bundles
   if (snip.exposed !== undefined) {
     for (var i = 0; i < snip.exposed.length; i++) {
-      snip.js.push(browerifyCDN + snip.exposed[i] + "@latest");
+      snip.js.push(global.browerifyCDN + snip.exposed[i] + "@latest");
     }
   }
 

@@ -29,6 +29,7 @@ workflow.prototype.start = function() {
   return this.run().then(function() {
     this.reloadCron = setInterval(this.run.bind(this), this.refreshTime * 1000);
     this.updateCron = setInterval(this.updateCronJob.bind(this), this.updateInterval * 1000);
+    return this.pkgs;
   }.bind(this));
 };
 
@@ -51,6 +52,7 @@ workflow.prototype.run = function run() {
       });
   }).then(function() {
     console.log("workflow: load complete.");
+    return self.pkgs;
   });
 };
 

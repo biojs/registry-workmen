@@ -17,42 +17,56 @@ var sinon = require('sinon');
 
 
 var github = require('../lib/github.js');
-var workmen = require('../lib/workmen.js');
+var workflow = require('../workflow.js');
 
-describe('workmen module', function(){
-  describe('#queryAll()', function(){
-    it('should mock receive biojs-vis-msa for the biojs tag and save it in the db', function(done){
-      var scope = nock('http://registry.nodejitsu.com')
-        .get('/-/_view/byKeyword?startkey=%5B%22biojs%22%5D&endkey=%5B%22biojs%22%2C%7B%7D%5D&group_level=3&descending=false&stale=update_after')
+describe('workmen module', function() {
+  describe('#queryAll()', function() {
+    it('should mock receive biojs-vis-msa for the biojs tag and save it in the db', function(done) {
+
+      var opts = {};
+      opts.keys = ["biojs"];
+      opts.registryURL = "https://registry.npmjs.eu";
+
+      var requestURL = "/-/_view/byKeyword?startkey=%5B%22biojs%22%5D&endkey=%5B%22biojs%22%2C%7B%7D%5D&group_level=3&descending=false&stale=update_after";
+
+      var scope = nock(opts.registryURL)
+        .get(requestURL)
         .replyWithFile(200, __dirname + '/npm.all.response')
         .get('/biojs-vis-msa')
         .replyWithFile(200, __dirname + '/npm.msa.response');
-      new workmen(function(pkgs){
-        var msa = pkgs['biojs-vis-msa'];
+
+      var flow = new workflow(opts);
+
+      flow.start().then(function(pkgs) {
+        var msa = pkgs[0];
         assert.equal(msa.name, "biojs-vis-msa");
+        flow.stop();
         done();
       });
     });
   });
 });
 
-describe('github module', function(){
-  describe('#queryAll()', function(){
-    it('should return an array of github infos', function(done){
-      var pkg = {repository: {type:"git", url:"git://github.com/greenify/biojs-vis-msa"}};
+describe('github module', function() {
+  describe('#queryAll()', function() {
+    it('should return an array of github infos', function(done) {
+      var pkg = {
+        name: "biojs-vis-msa",
+        repository: {
+          type: "git",
+          url: "git://github.com/greenify/biojs-vis-msa"
+        }
+      };
       var scope = nock('https://api.github.com')
         .filteringPath(/access_token=[^&]*/g, 'access_token=XXX')
         .get('/repos/greenify/biojs-vis-msa?access_token=XXX')
         .replyWithFile(200, __dirname + '/msa.response');
-      var customDone = function(name, msa){
+     var ghClient = new github(pkg);
+      ghClient.then(function(msa) {
         assert.equal(msa.github.id, 20128188);
+        assert.equal(msa.github.commits, 597);
         done();
-      };
-      var customOn = function(name, fn){
-        fn(pkg);
-      }
-      var ghClient = new github({trigger: customDone, on: customOn});
-      //ghClient.query(pkg); 
+      });
     });
   });
 });

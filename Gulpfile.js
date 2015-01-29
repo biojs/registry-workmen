@@ -10,6 +10,7 @@
 
 var gulp = require('gulp');
 var mocha = require('gulp-mocha');
+require("./test/mochaFix.js");
 
 // Copy all static images
 gulp.task('mocha', function () {
@@ -18,6 +19,7 @@ gulp.task('mocha', function () {
       globals: ['chai'],
       timeout: 6000,
       ignoreLeaks: false,
+      useColors: false,
       ui: 'bdd',
       reporter: 'spec'
     }));
@@ -25,12 +27,10 @@ gulp.task('mocha', function () {
 
 // Rerun the task when a file changes
 gulp.task('watch', function () {
-  gulp.watch(['./lib/**/*.js', './test/**/*.js'], ['test']);
+  gulp.watch(['./lib/**/*.js', './test/**/*.js', '*.js'], ['test']);
 });
 
-gulp.task('test', function () {
-  gulp.run('mocha', function () {});
-});
+gulp.task('test', ["mocha"]);
 
 // The default task (called when you run `gulp` from cli)
 gulp.task('default', ['mocha', 'watch']);

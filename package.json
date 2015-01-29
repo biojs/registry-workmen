@@ -44,7 +44,7 @@
     "mongodb": "^1.4.14",
     "mquery": "^1.2.0",
     "nedb": "^0.11.1",
-    "npm-keywords": "^1.0.3",
+    "npm-keywords": "^1.0.4",
     "npm-registry": "^0.1.11",
     "request": "^2.44.0",
     "response-time": "^2.2.0",
@@ -54,10 +54,10 @@
   },
   "devDependencies": {
     "chai": "~1.8.0",
-    "gulp": "~3.5.0",
-    "gulp-mocha": "~0.4.1",
-    "nock": "^0.47.0",
+    "gulp": "^3.8.10",
+    "gulp-mocha": "^2.0.0",
     "mocha": "~1.10.0",
+    "nock": "^0.47.0",
     "sinon": "^1.10.3"
   },
   "keywords": [],

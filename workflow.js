@@ -27,8 +27,6 @@ var workflow = function(opts) {
 };
 
 workflow.prototype.start = function() {
-  this.searchCron();
-  return q.resolve("a");
   return this.run().then(function() {
     this.reloadCron = setInterval(this.run.bind(this), this.refreshTime * 1000);
     this.searchCron = setInterval(this.searchCron.bind(this), this.searchTime * 1000);

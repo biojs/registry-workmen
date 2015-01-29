@@ -13,7 +13,7 @@ var port = process.env.PORT || process.argv[2] || 3000;
 var opts = {};
 opts.refreshTime = process.env.REFRESH_TIME || 3600; // in s
 opts.keys = ['biojs', 'bionode'];
-opts.registryURL = "http://registry.npmjs.eu";
+opts.registryURL = "http://registry.npmjs.org";
 
 global.ghProxy = "https://cdn.rawgit.com/";
 global.browerifyCDN  = "https://wzrd.in/bundle/";

@@ -8,6 +8,9 @@ var join = require("path").join;
 var errors = require("./errors");
 var mime = require("mime");
 
+var RequestCaching = require("node-request-caching");
+var rc = new RequestCaching();
+
 var snip = {};
 
 snip.demo = function(req, res) {
@@ -206,7 +209,12 @@ function serveGithubFile(pkg, path, res) {
   var type = mime.lookup(url);
   res.set('Content-Type', type);
   // proxy the data from github
-  request(url).pipe(res);
+  var ttl = 180; // in s
+  rc.get(url, {}, ttl, function(err, resp, body, cache){
+    res.send(body);
+    console.log("cache", cache.hit);
+  });
+  //request(url).pipe(res);
   //request.get(url, function(err, response, body) {
     //res.send(body);
   //});

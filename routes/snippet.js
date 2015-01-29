@@ -6,6 +6,7 @@ var loadSnippet = require("./snippets/demo.js");
 var snipResponse = require("./snippets/response.js");
 var join = require("path").join;
 var errors = require("./errors");
+var mime = require("mime");
 
 var snip = {};
 
@@ -204,6 +205,8 @@ function serveGithubFile(pkg, path, res) {
   console.log("serving github file", pkg, path);
   var url = "https://raw.githubusercontent.com/" + pkg.user + "/" + pkg.repo + "/" + path;
   request.get(url, function(err, response, body) {
+    var type = mime.lookup(url);
+    res.set('Content-Type', type);
     res.send(body);
   });
 }

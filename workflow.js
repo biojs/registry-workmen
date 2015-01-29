@@ -16,6 +16,7 @@ var postProcessor = require("./lib/util/postProcessor.js");
 var workflow = function(opts) {
   this.keys = opts.keys || [];
   this.refreshTime = opts.refreshTime || 3600;
+  this.searchTime = opts.searchTime || 120;
   this.updateInterval = opts.updateInterval || 60;
   this.db = new database();
   this.dbLoad = this.db.load();
@@ -26,8 +27,11 @@ var workflow = function(opts) {
 };
 
 workflow.prototype.start = function() {
+  this.searchCron();
+  return q.resolve("a");
   return this.run().then(function() {
     this.reloadCron = setInterval(this.run.bind(this), this.refreshTime * 1000);
+    this.searchCron = setInterval(this.searchCron.bind(this), this.searchTime * 1000);
     this.updateCron = setInterval(this.updateCronJob.bind(this), this.updateInterval * 1000);
     return this.pkgs;
   }.bind(this));
@@ -113,9 +117,30 @@ workflow.prototype.updateCronJob = function updateCronJob() {
   });
 };
 
+// crons the npm registry for new packages
+workflow.prototype.searchCron = function searchCron() {
+  var self = this;
+  var pkgNames = this.pkgs.map(function(pkg) {
+    return pkg.name;
+  });
+  return keywords(this.keys, this.npm).filter(function(pkg) {
+    console.log(pkg.name);
+    return pkgNames.indexOf(pkg.name) < 0;
+  }).then(function(pkgs) {
+    console.log(pkgs);
+    if (pkgs.length > 0) {
+      pkgs.forEach(function(pkg) {
+        console.log("new package found: ", pkg.name);
+        self.updatePkg(pkg.name);
+      });
+    }
+  });
+};
+
 workflow.prototype.stop = function() {
   clearInterval(this.updateCron);
   clearInterval(this.reloadCron);
+  clearInterval(this.searchCron);
 };
 
 module.exports = workflow;

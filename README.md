@@ -1,6 +1,8 @@
 registry-workmen
 ================
 
+[![Build Status](https://travis-ci.org/biojs/registry-workmen.svg?branch=master)](https://travis-ci.org/biojs/registry-workmen)
+
 The BioJS registry backend.
 
 Workflow

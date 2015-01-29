@@ -19,6 +19,9 @@ var sinon = require('sinon');
 var github = require('../lib/github.js');
 var workflow = require('../workflow.js');
 
+// set github API token
+process.env.GITHUB_TOKEN = "ABC";
+
 describe('workmen module', function() {
   describe('#queryAll()', function() {
     it('should mock receive biojs-vis-msa for the biojs tag and save it in the db', function(done) {
@@ -61,7 +64,7 @@ describe('github module', function() {
         .filteringPath(/access_token=[^&]*/g, 'access_token=XXX')
         .get('/repos/greenify/biojs-vis-msa?access_token=XXX')
         .replyWithFile(200, __dirname + '/msa.response');
-     var ghClient = new github(pkg);
+      var ghClient = new github(pkg);
       ghClient.then(function(msa) {
         assert.equal(msa.github.id, 20128188);
         assert.equal(msa.github.commits, 597);

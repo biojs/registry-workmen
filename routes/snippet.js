@@ -200,15 +200,16 @@ snip.github = function(req, res) {
 };
 
 function serveGithubFile(pkg, path, res) {
-  // TODO: minify gzip
-  // TODO: cache locally
+  // TODO: cache locally - maybe node-request-caching ?
   console.log("serving github file", pkg, path);
   var url = "https://raw.githubusercontent.com/" + pkg.user + "/" + pkg.repo + "/" + path;
-  request.get(url, function(err, response, body) {
-    var type = mime.lookup(url);
-    res.set('Content-Type', type);
-    res.send(body);
-  });
+  var type = mime.lookup(url);
+  res.set('Content-Type', type);
+  // proxy the data from github
+  request(url).pipe(res);
+  //request.get(url, function(err, response, body) {
+    //res.send(body);
+  //});
 }
 
 module.exports = snip;

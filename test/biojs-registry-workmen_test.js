@@ -21,6 +21,7 @@ var workflow = require('../workflow.js');
 
 // set github API token
 process.env.GITHUB_TOKEN = "ABC";
+process.env.TEST_MODE = true;
 
 describe('workmen module', function() {
   describe('#queryAll()', function() {

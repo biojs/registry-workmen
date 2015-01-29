@@ -29,7 +29,7 @@
     "registry-workmen": "server.js"
   },
   "scripts": {
-    "test": "./node_modules/gulp/bin/gulp.js gulp test",
+    "test": "./node_modules/gulp/bin/gulp.js test",
     "start": "node server.js 5000"
   },
   "dependencies": {

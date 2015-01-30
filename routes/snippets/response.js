@@ -2,7 +2,8 @@ module.change_code = 1;
 // THIS separation is done because it allows hotswapping
 
 var snip = {};
-var instanceTag = "\/\/@biojs-instance=([.a-zA-Z0-9_]+).*";
+// for same strange reasons we can't use [a-zA-Z_0-9]
+var instanceTag = "\/\/@biojs-instance=(([\w]|.)+).*";
 
 snip._demoFill = function(res, item) {
   // TODO: experimental way to send events to the main window

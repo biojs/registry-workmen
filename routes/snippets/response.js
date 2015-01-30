@@ -2,7 +2,7 @@ module.change_code = 1;
 // THIS separation is done because it allows hotswapping
 
 var snip = {};
-var instanceTag = "\/\/@biojs-instance=([.a-zA-Z0-9_]+)";
+var instanceTag = "\/\/@biojs-instance=([.a-zA-Z0-9_]+).*";
 
 snip._demoFill = function(res, item) {
   // TODO: experimental way to send events to the main window
@@ -31,7 +31,7 @@ snip._buildInstanceFooter = function() {
 };
 
 snip.removeTags = function(item) {
-  var instTag = new RegExp(instanceTag + ".*\n");
+  var instTag = new RegExp(instanceTag + "\n");
   item.inlineScript = item.inlineScript.replace(instTag, "");
 };
 

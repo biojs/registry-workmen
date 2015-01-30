@@ -126,10 +126,8 @@ workflow.prototype.searchCron = function searchCron() {
     return pkg.name;
   });
   return keywords(this.keys, this.npm).filter(function(pkg) {
-    console.log(pkg.name);
     return pkgNames.indexOf(pkg.name) < 0;
   }).then(function(pkgs) {
-    console.log(pkgs);
     if (pkgs.length > 0) {
       pkgs.forEach(function(pkg) {
         console.log("new package found: ", pkg.name);

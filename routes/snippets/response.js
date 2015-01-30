@@ -3,11 +3,12 @@ module.change_code = 1;
 
 var snip = {};
 // for same strange reasons we can't use [a-zA-Z_0-9]
-var instanceTag = "\/\/@biojs-instance=(([\w]|[.])+).*";
+var instanceTag = "\/\/@biojs-instance=([\\w.]+).*";
 
 snip._demoFill = function(res, item) {
   // TODO: experimental way to send events to the main window
   var instTag = new RegExp(instanceTag);
+  console.log(item.inlineScript.search(instTag));
   if (item.inlineScript.search(instTag) >= 0) {
     item.inlineScript += snip._buildInstanceHeader();
     item.inlineScript = item.inlineScript.replace(instTag, "$1" + snip._buildInstanceFooter());

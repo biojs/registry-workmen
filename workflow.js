@@ -19,7 +19,9 @@ var workflow = function(opts) {
   this.refreshTime = opts.refreshTime || 3600;
   this.searchTime = opts.searchTime || 120;
   this.updateInterval = opts.updateInterval || 60;
-  this.db = new database();
+  this.db = new database({
+    log: log
+  });
   this.dbLoad = this.db.load();
   this.pkgs = [];
   this.npm = new registry({
@@ -44,7 +46,7 @@ workflow.prototype.run = function run() {
   var self = this;
   return keywords(this.keys, this.npm).map(this.downloadPkg.bind(this)).then(function(pkgs) {
     // on succes:  save to DB 
-    console.log("workflow: trying to save into DB.");
+    log.info("workflow: trying to save into DB.");
     self.pkgs = pkgs.map(function(el) {
       return {
         name: el.name,
@@ -57,7 +59,7 @@ workflow.prototype.run = function run() {
         return self.db.save(pkgs);
       });
   }).then(function() {
-    console.log("workflow: load complete.");
+    log.info("workflow: load complete.");
     return self.pkgs;
   });
 };
@@ -77,16 +79,19 @@ workflow.prototype.postDownload = function(pkg) {
     keys: this.keys
   };
   var ps = [];
-  ps.push(new ghClient(pkg));
-  ps.push(new npmHistory(pkg));
+  var opts = {
+    log: log
+  };
+  ps.push(new ghClient(pkg, opts));
+  ps.push(new npmHistory(pkg, opts, this.npm));
   return q.all(ps).then(function() {
     return postProcessor(pkg, postOpts);
   }).catch(function(err) {
     if (err != undefined && err.name !== "queryEvents") {
       // event errors can happen - ignore them
-      console.log("downloaderr", err);
+      log.warn("downloaderr", err);
     } else {
-      console.log(arguments);
+      log.info(arguments);
     }
     return pkg;
   });
@@ -98,10 +103,10 @@ workflow.prototype.updatePkg = function(pkg) {
     var index = _.indexOf(_.pluck(this.pkgs, "name"), newPkg.name);
     this.pkgs[index] = newPkg;
     this.db.updatePkg(newPkg);
-    console.log("package update saved: ", newPkg.name);
+    log.info("package update saved: ", newPkg.name);
   }.bind(this)).catch(function(err) {
-    console.log("err during package update: ", pkg.name);
-    console.log(err);
+    log.warn("err during package update: ", pkg.name);
+    log.warn(err);
   });
 };
 
@@ -112,7 +117,7 @@ workflow.prototype.updateCronJob = function updateCronJob() {
     return new npmClient(oldPkg.name + "@latest", self.npm).then(function(newPkg) {
       // we have only the latest version -> download entire package
       if (oldPkg.version != newPkg.version && newPkg.name != undefined) {
-        console.log("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
+        log.info("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
         self.updatePkg(newPkg.name);
       }
     }.bind(this));
@@ -130,7 +135,7 @@ workflow.prototype.searchCron = function searchCron() {
   }).then(function(pkgs) {
     if (pkgs.length > 0) {
       pkgs.forEach(function(pkg) {
-        console.log("new package found: ", pkg.name);
+        log.info("new package found: ", pkg.name);
         self.updatePkg(pkg.name);
       });
     }
@@ -142,14 +147,13 @@ workflow.prototype.liveStreamCron = function searchCron() {
   return new NpmPublishStream()
     .on('data', function(data) {
       var newPkg = data.doc;
-      console.log(newPkg.name);
       if (_.intersection(newPkg.keywords, self.keys).length > 0) {
         var oldPkg = self.pkgs[newPkg.name];
         if (oldPkg == undefined) {
-          console.log("new package found: ", newPkg.name);
+          log.info("new package found: ", newPkg.name);
           self.updatePkg(newPkg.name);
         } else if (oldPkg.version != newPkg.version) {
-          console.log("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
+          log.info("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
           self.updatePkg(newPkg.name);
         }
       }
@@ -160,9 +164,13 @@ workflow.prototype.stop = function() {
   clearInterval(this.updateCronI);
   clearInterval(this.reloadCronI);
   clearInterval(this.searchCronI);
-  if(this.liveStreamI){
+  if (this.liveStreamI) {
     this.liveStreamI.end();
   }
 };
 
-module.exports = workflow;
+var log;
+module.exports = function(logger) {
+  log = logger;
+  return workflow;
+};

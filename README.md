@@ -49,6 +49,8 @@ Available views
   
 [`/detail/:name`](http://workmen.biojs.net/detail/biojs-sniper): info for only one BioJS packages
 
+[`/stat`](http://workmen.biojs.net/stat): General statistics
+
 #### Snippet pages
 
 [`/demo/:name`](http://workmen.biojs.net/demo/biojs-vis-msa): Listing of all available snippets
@@ -63,6 +65,11 @@ Will forword you to the specific editors with the snippet.
 
 [`/codepen/:name/:snippet`](http://workmen.biojs.net/codepen/biojs-vis-msa/msa_show_menu)
 
+[`/plunker/:name/:snippet`](http://workmen.biojs.net/plunker/biojs-vis-msa/msa_show_menu)
+
+#### Debug
+
+[`/logs`](http://workmen.biojs.net/logs): Display the latest log outputs
 
 (see `server.js`)
 

@@ -7,7 +7,7 @@ queries.all = function all(req, res) {
   db.db().find().exec(function(err, pkgs) {
     // &short=1 gives only the abstract of every pkg
     if (req.query.short !== undefined) {
-      var pkgsSum = pkgs.map(function(pkg){
+      var pkgsSum = pkgs.map(function(pkg) {
         return limitPackage(pkg, defaultProps);
       });
       res.jsonp(pkgsSum);
@@ -41,12 +41,35 @@ queries.detail = function detail(req, res) {
   });
 };
 
+queries.logs = function logs(req, res) {
+  var options = {
+    from: req.query.from || new Date() - 24 * 60 * 60 * 1000,
+    until: req.query.until || new Date(),
+    limit: req.query.limit|| 200,
+    start: req.query.start || 0,
+    order: req.query.order || 'desc',
+    fields: ['message', 'level']
+  };
+  //log.stream({ start: -1 }).on('log', function(log) {
+  //res.write(log.message);
+  //res.write("\n");
+  //});
+  //return;
+  log.query(options, function(err, results) {
+    results = results.mongodb;
+    var msgs = results.map(function(r) {
+      return r.level + ": " + r.message;
+    }).join("\n");
+    res.send(msgs);
+  });
+};
+
 queries.search = function search(req, res) {
   var limit = req.query.limit || 5;
   var orderBy = req.query.orderby || "name";
   var orderDict = {};
   var orderDirection = 1;
-  if(req.query.reversesort) orderDirection = -1;
+  if (req.query.reversesort) orderDirection = -1;
   orderDict[orderBy] = orderDirection;
 
   var props = ['created', 'description', 'releases', 'version', 'license', 'name', 'modified',
@@ -80,4 +103,8 @@ function limitPackage(pkg, props) {
   return pi;
 }
 
-module.exports = queries;
+var log;
+module.exports = function(logger) {
+  log = logger;
+  return queries;
+};

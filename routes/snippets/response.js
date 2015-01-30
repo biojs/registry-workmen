@@ -8,7 +8,6 @@ var instanceTag = "\/\/@biojs-instance=([\\w.]+).*";
 snip._demoFill = function(res, item) {
   // TODO: experimental way to send events to the main window
   var instTag = new RegExp(instanceTag);
-  console.log(item.inlineScript.search(instTag));
   if (item.inlineScript.search(instTag) >= 0) {
     item.inlineScript += snip._buildInstanceHeader();
     item.inlineScript = item.inlineScript.replace(instTag, "$1" + snip._buildInstanceFooter());

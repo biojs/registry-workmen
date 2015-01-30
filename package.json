@@ -39,6 +39,7 @@
     "dateformat": "^1.0.8",
     "deepcopy": "^0.3.3",
     "express": "^4.9.4",
+    "express-winston": "^0.2.12",
     "github": "^0.2.2",
     "lodash": "^2.4.1",
     "mime": "^1.2.11",
@@ -53,7 +54,9 @@
     "response-time": "^2.2.0",
     "swig": "^1.4.2",
     "traverse": "^0.6.6",
-    "underscore": "^1.7.0"
+    "underscore": "^1.7.0",
+    "winston": "^0.8.3",
+    "winston-mongodb": "^0.5.3"
   },
   "devDependencies": {
     "chai": "~1.8.0",

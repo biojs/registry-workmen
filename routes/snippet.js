@@ -211,9 +211,9 @@ function serveGithubFile(pkg, path, res) {
   var ttl = 180; // in s
   rc.get(url, {}, ttl, function(err, resp, body, cache){
     if(cache.hit){
-      console.log("serving github file (from cache)", pkg, path);
+      log.verbose("serving github file (from cache)", pkg, path);
     }else{
-      console.log("serving github file (new to cache)", pkg, path);
+      log.verbose("serving github file (new to cache)", pkg, path);
     }
     res.send(body);
   });
@@ -223,4 +223,8 @@ function serveGithubFile(pkg, path, res) {
   //});
 }
 
-module.exports = snip;
+var log;
+module.exports = function(logger) {
+  log = logger;
+  return snip;
+};

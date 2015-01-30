@@ -162,7 +162,9 @@ workflow.prototype.stop = function() {
   clearInterval(this.updateCronI);
   clearInterval(this.reloadCronI);
   clearInterval(this.searchCronI);
-  this.liveStreamCron.close();
+  if(this.liveStreamI){
+    this.liveStreamI.end();
+  }
 };
 
 module.exports = workflow;

@@ -64,7 +64,11 @@ describe('github module', function() {
       var scope = nock('https://api.github.com')
         .filteringPath(/access_token=[^&]*/g, 'access_token=XXX')
         .get('/repos/greenify/biojs-vis-msa?access_token=XXX')
-        .replyWithFile(200, __dirname + '/msa.response');
+        .replyWithFile(200, __dirname + '/github.msa.response')
+        .get('/repos/greenify/biojs-vis-msa')
+        .replyWithFile(200, __dirname + '/github.msa.response')
+        .get('/repos/greenify/biojs-vis-msa/contributors')
+        .replyWithFile(200, __dirname + '/github.msa.contributors.response');
       var ghClient = new github(pkg);
       ghClient.then(function(msa) {
         assert.equal(msa.github.id, 20128188);

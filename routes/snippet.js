@@ -203,16 +203,18 @@ snip.github = function(req, res) {
 };
 
 function serveGithubFile(pkg, path, res) {
-  // TODO: cache locally - maybe node-request-caching ?
-  console.log("serving github file", pkg, path);
   var url = "https://raw.githubusercontent.com/" + pkg.user + "/" + pkg.repo + "/" + path;
   var type = mime.lookup(url);
   res.set('Content-Type', type);
   // proxy the data from github
   var ttl = 180; // in s
   rc.get(url, {}, ttl, function(err, resp, body, cache){
+    if(cache.hit){
+      console.log("serving github file (from cache)", pkg, path);
+    }else{
+      console.log("serving github file (new to cache)", pkg, path);
+    }
     res.send(body);
-    console.log("cache", cache.hit);
   });
   //request(url).pipe(res);
   //request.get(url, function(err, response, body) {

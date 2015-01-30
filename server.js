@@ -17,6 +17,7 @@ opts.registryURL = "http://registry.npmjs.org";
 
 global.ghProxy = "https://cdn.rawgit.com/";
 global.browerifyCDN  = "https://wzrd.in/bundle/";
+global.parcelifyCDN  = "http://parce.li/bundle/";
 
 // setup swig in express
 var app = express();

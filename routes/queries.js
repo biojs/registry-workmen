@@ -62,7 +62,9 @@ queries.logs = function logs(req, res) {
     }
     results = results.mongodb;
     res.set({
-      'Content-Type': 'text/plain'
+      'Content-Type': 'text/plain',
+      'Cache-Control': 'private, no-cache, no-store, must-revalidat',
+      'Expires': '-1'
     });
     var msgs = results.map(function(r) {
       return r.level + ": " + r.message;

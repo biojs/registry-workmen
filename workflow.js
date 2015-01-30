@@ -1,6 +1,7 @@
 var q = require('bluebird');
 var registry = require("npm-registry");
 var _ = require('underscore');
+var NpmPublishStream = require('npm-publish-stream');
 
 var database = require("./lib/database.js");
 
@@ -28,9 +29,12 @@ var workflow = function(opts) {
 
 workflow.prototype.start = function() {
   return this.run().then(function() {
-    this.reloadCron = setInterval(this.run.bind(this), this.refreshTime * 1000);
-    this.searchCron = setInterval(this.searchCron.bind(this), this.searchTime * 1000);
-    this.updateCron = setInterval(this.updateCronJob.bind(this), this.updateInterval * 1000);
+    this.reloadCronI = setInterval(this.run.bind(this), this.refreshTime * 1000);
+    this.searchCronI = setInterval(this.searchCron.bind(this), this.searchTime * 1000);
+    this.updateCronI = setInterval(this.updateCronJob.bind(this), this.updateInterval * 1000);
+    // TODO: check whether it makes sense to enable this
+    // the "live-stream" also uses polling
+    //this.liveStreamI = this.liveStreamCron();
     return this.pkgs;
   }.bind(this));
 };
@@ -135,10 +139,30 @@ workflow.prototype.searchCron = function searchCron() {
   });
 };
 
+workflow.prototype.liveStreamCron = function searchCron() {
+  var self = this;
+  return new NpmPublishStream()
+    .on('data', function(data) {
+      var newPkg = data.doc;
+      console.log(newPkg.name);
+      if (_.intersection(newPkg.keywords, self.keys).length > 0) {
+        var oldPkg = self.pkgs[newPkg.name];
+        if (oldPkg == undefined) {
+          console.log("new package found: ", newPkg.name);
+          self.updatePkg(newPkg.name);
+        } else if (oldPkg.version != newPkg.version) {
+          console.log("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
+          self.updatePkg(newPkg.name);
+        }
+      }
+    });
+};
+
 workflow.prototype.stop = function() {
-  clearInterval(this.updateCron);
-  clearInterval(this.reloadCron);
-  clearInterval(this.searchCron);
+  clearInterval(this.updateCronI);
+  clearInterval(this.reloadCronI);
+  clearInterval(this.searchCronI);
+  this.liveStreamCron.close();
 };
 
 module.exports = workflow;

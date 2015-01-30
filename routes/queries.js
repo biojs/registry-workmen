@@ -45,7 +45,7 @@ queries.logs = function logs(req, res) {
   var options = {
     from: req.query.from || new Date() - 24 * 60 * 60 * 1000,
     until: req.query.until || new Date(),
-    limit: req.query.limit|| 200,
+    limit: req.query.limit || 200,
     start: req.query.start || 0,
     order: req.query.order || 'desc',
     fields: ['message', 'level']
@@ -56,7 +56,14 @@ queries.logs = function logs(req, res) {
   //});
   //return;
   log.query(options, function(err, results) {
+    if(err){
+      log.warn(err);
+      res.status(500).send(err);
+    }
     results = results.mongodb;
+    res.set({
+      'Content-Type': 'text/plain'
+    });
     var msgs = results.map(function(r) {
       return r.level + ": " + r.message;
     }).join("\n");

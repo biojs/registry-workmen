@@ -141,6 +141,7 @@ snip.edit = function(req, res, callback) {
       currentSnip: currentSnip,
       res: res
     }, function(snp) {
+      snipResponse.removeTags(snp);
       var githubRegex = /\/github\//g;
       for (var i in snp.js) {
         snp.js[i] = snp.js[i].replace(githubRegex, global.ghProxy);

@@ -22,8 +22,9 @@ Workflow
 
 Currently the db is cleaned on every run.
 
-(see workflow.js)
+(see `workflow.js`)
 
+![Registry workmen workflow](https://raw.githubusercontent.com/biojs/registry-workmen/master/structure/workmen_structure_2014_11.png)
 
 Use
 ----

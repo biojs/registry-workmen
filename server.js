@@ -20,12 +20,13 @@ var logOpts = {
 var mongo = require("./lib/database.js");
 if (mongo.prototype.isMongo()) {
   var MongoDB = require('winston-mongodb').MongoDB;
-  logOpts.transports.push(new MongoDB({
+  var mongoTransport = new MongoDB({
     collection: "logs",
     dbUri: mongo.prototype.getMongoUri(),
     capped: true,
     cappedSize: 10000000, // roughly 10 MB
-  }));
+  });
+  logOpts.transports.push(mongoTransport);
   console.log("using MongoDB as winston log storage");
 }
 var logger = new winston.Logger(logOpts);
@@ -74,14 +75,21 @@ app.use(wares.cacheControl);
 app.use(responseTime());
 app.use(wares.checkDB);
 
+var expressTransports = [
+  new winston.transports.Console({
+    json: false,
+    colorize: true
+  }),
+];
+
+if (mongo.prototype.isMongo()) {
+  expressTransports.push(mongoTransport);
+}
+
+
 // log all requests
 app.use(expressWinston.logger({
-  transports: [
-    new winston.transports.Console({
-      json: false,
-      colorize: true
-    })
-  ],
+  transports: expressTransports,
   meta: false,
   msg: "HTTP {{req.method}} {{res.statusCode}} {{req.url}}",
   colorStatus: true

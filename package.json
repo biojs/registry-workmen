@@ -47,7 +47,7 @@
     "mongodb": "^1.4.14",
     "mquery": "^1.2.0",
     "nedb": "^0.11.1",
-    "node-request-caching": "git://github.com/matteoagosti/node-request-caching",
+    "node-request-caching": "file:../../../../../../../tmp/npm-6989-e37e9e5c/1422703813944-0.015228707110509276/78e73de48e51ea8f1d9d1a3659ff17a75d68e6a5",
     "npm-keywords": "^1.0.4",
     "npm-publish-stream": "^1.0.2",
     "npm-registry": "^0.1.11",

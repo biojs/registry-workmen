@@ -10,28 +10,26 @@ Workflow
 
 1) Search for all packages with a special tag on npm ('biojs', bionode')  + remove duplicate packages (uniq)  
 2) Query npm -> package.json  
-3) Run extensions
+3) Run extensions  
 3.1) npm: history stats  
 3.2) github  
-3.2.1) github info
-3.2.2) github stats
-3.2.3) Optional: Query github for snippets  (ls "snippets")
-3.2.4) Optional: Query for `events.json`
-4) Run post processing (e.g. removal of duplicate keywords)
-5) Store the result in a DB
+3.2.1) github info  
+3.2.2) github stats  
+3.2.3) Optional: Query github for snippets  (ls "snippets")  
+4) Run post processing (e.g. removal of duplicate keywords)  
+5) Store the result in a DB  
 
 Currently the db is cleaned on every run.
 
-(see workflow.js)
+(see `workflow.js`)
 
+![Registry workmen workflow](https://raw.githubusercontent.com/biojs/registry-workmen/master/structure/workmen_structure_2014_11.png)
 
 Use
 ----
 
 A working instance can be browsed at `workmen.biojs.net`.
 If you want deploy access, ping @greenify - otherwise just send us a pull request here.
-
-![Workmen structure](https://raw.githubusercontent.com/biojs/biojs/master/registry_workmen/workmen_structure_2014_11.png)
 
 Cronjobs
 ----------

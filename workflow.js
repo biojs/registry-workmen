@@ -30,6 +30,7 @@ var workflow = function(opts) {
 };
 
 workflow.prototype.start = function() {
+
   return this.run().then(function() {
     this.reloadCronI = setInterval(this.run.bind(this), this.refreshTime * 1000);
     this.searchCronI = setInterval(this.searchCron.bind(this), this.searchTime * 1000);
@@ -118,7 +119,9 @@ workflow.prototype.updateCronJob = function updateCronJob() {
       // we have only the latest version -> download entire package
       if (oldPkg.version != newPkg.version && newPkg.name != undefined) {
         log.info("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
-        self.updatePkg(newPkg.name);
+        self.updatePkg(newPkg.name).then(function(){
+          self.trigger("pkg:update", newPkg);
+        });
       }
     }.bind(this));
   });
@@ -136,7 +139,9 @@ workflow.prototype.searchCron = function searchCron() {
     if (pkgs.length > 0) {
       pkgs.forEach(function(pkg) {
         log.info("new package found: ", pkg.name);
-        self.updatePkg(pkg.name);
+        self.updatePkg(pkg.name).then(function(){
+          self.trigger("pkg:new", pkg);
+        });
       });
     }
   });
@@ -168,6 +173,8 @@ workflow.prototype.stop = function() {
     this.liveStreamI.end();
   }
 };
+
+require("biojs-events").mixin(workflow.prototype);
 
 var log;
 module.exports = function(logger) {

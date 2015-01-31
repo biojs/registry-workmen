@@ -67,6 +67,12 @@ flow.start().then(function() {
   logger.info(".saved.");
 });
 
+var notifcations = require("./notifications");
+notifcations({
+  evt: flow,
+  log: logger
+});
+
 // middlewares
 app.use(wares.cors);
 app.disable('x-powered-by');
@@ -85,7 +91,6 @@ var expressTransports = [
 if (mongo.prototype.isMongo()) {
   expressTransports.push(mongoTransport);
 }
-
 
 // log all requests
 app.use(expressWinston.logger({

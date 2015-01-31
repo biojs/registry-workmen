@@ -1,5 +1,5 @@
 var irc = require('irc');
-var channelName = "#open";
+var channelName = "#biojs";
 
 var client = new irc.Client('irc.freenode.net', 'biojs-registry', {
   userName: "biojs-registry",

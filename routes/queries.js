@@ -2,6 +2,7 @@
 module.change_code = 1; // this allows hotswapping of code (ignored in production)
 var queries = {};
 var _ = require("underscore");
+var moment = require("moment");
 
 queries.all = function all(req, res) {
   db.db().find().exec(function(err, pkgs) {
@@ -48,7 +49,7 @@ queries.logs = function logs(req, res) {
     limit: req.query.limit || 200,
     start: req.query.start || 0,
     order: req.query.order || 'desc',
-    fields: ['message', 'level']
+    fields: ['message', 'level', 'timestamp' ]
   };
   //log.stream({ start: -1 }).on('log', function(log) {
   //res.write(log.message);
@@ -67,7 +68,7 @@ queries.logs = function logs(req, res) {
       'Expires': '-1'
     });
     var msgs = results.map(function(r) {
-      return r.level + ": " + r.message;
+      return moment(r.timestamp).format() + " - " +  r.level + ": " + r.message;
     }).join("\n");
     res.send(msgs);
   });

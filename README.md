@@ -10,7 +10,7 @@ Workflow
 
 1) Search for all packages with a special tag on npm ('biojs', bionode')  + remove duplicate packages (uniq)  
 2) Query npm -> package.json  
-3) Run extensions
+3) Run extensions  
 3.1) npm: history stats  
 3.2) github  
 3.2.1) github info  

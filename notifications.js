@@ -120,7 +120,7 @@ module.exports = function(opts) {
     // post to twitter
     if (T) {
       T.post('statuses/update', {
-        status: text + " #biojs #npm #biojsio"
+        status: text + "\n" + "http://biojs.io/d/" + pkg.name + " #biojs"
       }, function(err, data, response) {
         if (err) {
           log.error(err);

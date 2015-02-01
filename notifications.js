@@ -1,7 +1,9 @@
 var irc = require('irc');
 var swig = require('swig');
 var email = require("emailjs");
-var Twit = require('twit')
+var Twit = require('twit');
+var ATOM = require('atom');
+var RSS = require('rss');
 
 var isTwitter = !!process.env.TWITTER_CONSUMER_SECRET && !!process.env.TWITTER_CONSUMER_KEY && !!process.env.TWITTER_ACCESS_SECRET && !!process.env.TWITTER_ACCESS_TOKEN;
 
@@ -55,18 +57,27 @@ module.exports = function(opts) {
   //var msgBuffer = [];
   var msgBufferMaxLength = 10;
 
-  var RSS = require('rss');
-  var feed = new RSS({
+  var newsConfig = {
     title: "BioJS registry news feed",
     description: "Package events from biojs.io",
     feed_url: "http://workmen.biojs.net/news/rss",
     site_url: "http://biojs.io",
     language: "en",
     ttl: "5",
-    pubDate: new Date()
-  });
+    pubDate: new Date(),
+    date: new Date(),
+    updated: new Date(),
+  };
+  var rfeed = new RSS(newsConfig);
+  var afeed = new ATOM(newsConfig);
   this.rss = function(req, res) {
-    var xml = feed.xml({
+    var xml = rfeed.xml({
+      indent: true
+    });
+    res.send(xml);
+  };
+  this.atom = function(req, res) {
+    var xml = afeed.xml({
       indent: true
     });
     res.send(xml);
@@ -81,9 +92,15 @@ module.exports = function(opts) {
     if (pkg.author && pkg.author.name) {
       item.author = pkg.author.name;
     }
-    feed.item(item);
-    if (feed.items.length > msgBufferMaxLength) {
-      feed.items.shift();
+    rfeed.item(item);
+    afeed.item(item);
+    // fix atom
+    afeed.items[afeed.items.length - 1].updated = new Date();
+    while (rfeed.items.length > msgBufferMaxLength) {
+      rfeed.items.shift();
+    }
+    while (afeed.items.length > msgBufferMaxLength) {
+      afeed.items.shift();
     }
   }
 
@@ -91,7 +108,7 @@ module.exports = function(opts) {
 
     //msgBuffer.unshift(text);
     //while (msgBuffer.length > msgBufferMaxLength) {
-      //msgBuffer.pop();
+    //msgBuffer.pop();
     //}
 
     // post to IRC

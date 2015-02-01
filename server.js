@@ -127,6 +127,7 @@ app.get('/github/:name/:repo/*', snip.github);
 
 // news
 app.get('/news/rss', notify.rss);
+app.get('/news/atom', notify.atom);
 
 
 var server = app.listen(port, function() {

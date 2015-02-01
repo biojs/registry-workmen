@@ -67,8 +67,8 @@ flow.start().then(function() {
   logger.info(".saved.");
 });
 
-var notifcations = require("./notifications");
-notifcations({
+var notifications = require("./notifications");
+var notify = new notifications({
   evt: flow,
   log: logger
 });
@@ -124,6 +124,9 @@ app.get('/plunker/:name/:snip', snip.plunker);
 
 // proxies
 app.get('/github/:name/:repo/*', snip.github);
+
+// news
+app.get('/news/rss', notify.rss);
 
 
 var server = app.listen(port, function() {

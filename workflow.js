@@ -30,6 +30,14 @@ var workflow = function(opts) {
 };
 
 workflow.prototype.start = function() {
+  //var self = this;
+  //this.updatePkg({name: "biojs-vis-msa"}).then(function(p){
+    //self.trigger("pkg:updated", p); 
+  //});
+  //this.updatePkg({name: "biojs-vis-seqlogo"}).then(function(p){
+    //self.trigger("pkg:updated", p); 
+  //});
+  //return q.resolve("a");
   return this.run().then(function() {
     this.reloadCronI = setInterval(this.run.bind(this), this.refreshTime * 1000);
     this.searchCronI = setInterval(this.searchCron.bind(this), this.searchTime * 1000);
@@ -119,8 +127,8 @@ workflow.prototype.updateCronJob = function updateCronJob() {
       // we have only the latest version -> download entire package
       if (oldPkg.version != newPkg.version && newPkg.name != undefined) {
         log.info("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
-        self.updatePkg(newPkg.name).then(function(p){
-          self.trigger("pkg:updated", p);
+        self.updatePkg(newPkg.name).then(function(){
+          self.trigger("pkg:update", newPkg);
         });
       }
     }.bind(this));
@@ -139,8 +147,8 @@ workflow.prototype.searchCron = function searchCron() {
     if (pkgs.length > 0) {
       pkgs.forEach(function(pkg) {
         log.info("new package found: ", pkg.name);
-        self.updatePkg(pkg.name).then(function(p){
-          self.trigger("pkg:new", p);
+        self.updatePkg(pkg.name).then(function(){
+          self.trigger("pkg:new", pkg);
         });
       });
     }

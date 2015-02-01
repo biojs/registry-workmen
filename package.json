@@ -55,8 +55,10 @@
     "npm-registry": "^0.1.11",
     "request": "^2.44.0",
     "response-time": "^2.2.0",
+    "rss": "^1.1.1",
     "swig": "^1.4.2",
     "traverse": "^0.6.6",
+    "twit": "^1.1.19",
     "underscore": "^1.7.0",
     "winston": "^0.8.3",
     "winston-mongodb": "^0.5.3"

@@ -120,7 +120,7 @@ workflow.prototype.updateCronJob = function updateCronJob() {
       if (oldPkg.version != newPkg.version && newPkg.name != undefined) {
         log.info("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
         self.updatePkg(newPkg.name).then(function(p){
-          self.trigger("pkg:update", p);
+          self.trigger("pkg:updated", p);
         });
       }
     }.bind(this));

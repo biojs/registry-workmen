@@ -38,7 +38,6 @@ module.exports = function(opts) {
   });
 
   function speak(text) {
-    log.verbose("irc client" + text);
     if (client.connected) {
       client.say(channelName, text);
     }

@@ -30,7 +30,6 @@ var workflow = function(opts) {
 };
 
 workflow.prototype.start = function() {
-
   return this.run().then(function() {
     this.reloadCronI = setInterval(this.run.bind(this), this.refreshTime * 1000);
     this.searchCronI = setInterval(this.searchCron.bind(this), this.searchTime * 1000);
@@ -105,6 +104,7 @@ workflow.prototype.updatePkg = function(pkg) {
     this.pkgs[index] = newPkg;
     this.db.updatePkg(newPkg);
     log.info("package update saved: ", newPkg.name);
+    return newPkg;
   }.bind(this)).catch(function(err) {
     log.warn("err during package update: ", pkg.name);
     log.warn(err);
@@ -119,8 +119,8 @@ workflow.prototype.updateCronJob = function updateCronJob() {
       // we have only the latest version -> download entire package
       if (oldPkg.version != newPkg.version && newPkg.name != undefined) {
         log.info("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
-        self.updatePkg(newPkg.name).then(function(){
-          self.trigger("pkg:update", newPkg);
+        self.updatePkg(newPkg.name).then(function(p){
+          self.trigger("pkg:update", p);
         });
       }
     }.bind(this));
@@ -139,8 +139,8 @@ workflow.prototype.searchCron = function searchCron() {
     if (pkgs.length > 0) {
       pkgs.forEach(function(pkg) {
         log.info("new package found: ", pkg.name);
-        self.updatePkg(pkg.name).then(function(){
-          self.trigger("pkg:new", pkg);
+        self.updatePkg(pkg.name).then(function(p){
+          self.trigger("pkg:new", p);
         });
       });
     }

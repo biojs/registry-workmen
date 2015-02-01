@@ -84,6 +84,7 @@ module.exports = function(opts) {
   };
 
   function addRSS(text, pkg) {
+    log.info("adding rss item " + pkg.name);
     var item = {
       title: text,
       url: "http://biojs.io/" + pkg.name,

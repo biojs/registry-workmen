@@ -47,7 +47,7 @@ module.exports = function(opts) {
 
   evt.on("pkg:new", function(pkg) {
     var msg = "BioJS got a new package: " + pkg.name;
-    if (pkg.author) {
+    if (pkg.author && pkg.author.name) {
       msg += " by @" + pkg.author.name;
     }
     speak(msg);
@@ -72,6 +72,10 @@ module.exports = function(opts) {
     }
   });
   evt.on("pkg:updated", function(pkg) {
-    speak("BioJS package update ", pkg.name + " to " + pkg.version);
+    var text = "BioJS package update " + pkg.name + " to " + pkg.version;
+    if (pkg.author && pkg.author.name) {
+      text += " by @" + pkg.author.name;
+    }
+    speak(text);
   });
 };

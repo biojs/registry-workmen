@@ -30,13 +30,14 @@ var workflow = function(opts) {
 };
 
 workflow.prototype.start = function() {
-  //var self = this;
+  var self = this;
   //this.updatePkg({name: "biojs-vis-msa"}).then(function(p){
     //self.trigger("pkg:updated", p); 
   //});
   //this.updatePkg({name: "biojs-vis-seqlogo"}).then(function(p){
     //self.trigger("pkg:updated", p); 
   //});
+  //this.searchCronI = setInterval(this.searchCron.bind(this), 5000);
   //return q.resolve("a");
   return this.run().then(function() {
     this.reloadCronI = setInterval(this.run.bind(this), this.refreshTime * 1000);
@@ -109,7 +110,11 @@ workflow.prototype.postDownload = function(pkg) {
 workflow.prototype.updatePkg = function(pkg) {
   return this.downloadPkg(pkg).then(function(newPkg) {
     var index = _.indexOf(_.pluck(this.pkgs, "name"), newPkg.name);
-    this.pkgs[index] = newPkg;
+    if(index >= 0){
+      this.pkgs[index] = newPkg;
+    }else{
+      this.pkgs[index].append(newPkg);
+    }
     this.db.updatePkg(newPkg);
     log.info("package update saved: ", newPkg.name);
     return newPkg;
@@ -141,6 +146,7 @@ workflow.prototype.searchCron = function searchCron() {
   var pkgNames = this.pkgs.map(function(pkg) {
     return pkg.name;
   });
+  console.log(pkgNames.length);
   return keywords(this.keys, this.npm).filter(function(pkg) {
     return pkgNames.indexOf(pkg.name) < 0;
   }).then(function(pkgs) {

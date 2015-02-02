@@ -2,6 +2,32 @@ var errors;
 module.exports = errors = {};
 var swig = require("swig");
 
+errors.searchForError = function(e, opts){
+  var foundError;
+  for(var key in errors){
+    if(e.indexOf(key) >= 0){
+      foundError = errors[key];
+      break;
+    }
+  }
+  if(foundError){
+    foundError(opts);
+  }else{
+    errors.unknownError(opts);
+  }
+};
+
+errors.unknownError = function(opts) {
+  var msg = "e500: Unknown error";
+  var errors = [];
+  errors.push("Please open an issue on https://github.com/biojs/biojs/issues");
+  errorHelper(opts, {
+    errors: errors,
+    msg: msg
+  });
+};
+
+
 errors.noSnippets = function(opts) {
   var msg = "e1: The workmen couldn't find any example snippets on github";
   var errors = [];

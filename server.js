@@ -5,7 +5,22 @@ var winston = require('winston');
 var expressWinston = require('express-winston');
 var responseTime = require('response-time');
 
+// configuration
+
+var port = process.env.PORT || process.argv[2] || 3000;
+var opts = {};
+opts.refreshTime = process.env.REFRESH_TIME || 3600; // in s
+opts.keys = ['biojs', 'bionode'];
+opts.registryURL = "http://registry.npmjs.org";
+
+var services = {
+  browserifyCDN: "https://wzrd.in/bundle/",
+  rawgit: "https://cdn.rawgit.com/",
+  parcelifyCDN: "http://parce.li/bundle/"
+};
+
 // init logging
+//
 var logOpts = {
   transports: [
     new(winston.transports.Console)({
@@ -31,20 +46,15 @@ if (mongo.prototype.isMongo()) {
 }
 var logger = new winston.Logger(logOpts);
 
+// require routes  & middleware
+
 var queries = (require("./routes/queries"))(logger);
-var snip = (require("./routes/snippet"))(logger);
+var snip = (require("./routes/snippet"))({
+  log: logger,
+  services: services
+});
 var wares = require("./lib/serverMiddleware");
 
-// cfg
-var port = process.env.PORT || process.argv[2] || 3000;
-var opts = {};
-opts.refreshTime = process.env.REFRESH_TIME || 3600; // in s
-opts.keys = ['biojs', 'bionode'];
-opts.registryURL = "http://registry.npmjs.org";
-
-global.ghProxy = "https://cdn.rawgit.com/";
-global.browerifyCDN = "https://wzrd.in/bundle/";
-global.parcelifyCDN = "http://parce.li/bundle/";
 
 // setup swig in express
 var app = express();

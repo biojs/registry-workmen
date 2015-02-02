@@ -2,7 +2,7 @@ module.change_code = 1; // this allows hotswapping of code (ignored in productio
 
 var swig = require("swig");
 var request = require("request");
-var loadSnippet = require("./snippets/demo.js");
+var SnippetDemo = require("biojs-util-snippets").demo;
 var snipResponse = require("./snippets/response.js");
 var join = require("path").join;
 var errors = require("./errors");
@@ -49,12 +49,17 @@ snip.demo = function(req, res) {
         return;
       }
     } else {
-      loadSnippet({
+      var s = new SnippetDemo({
         pkg: pkg,
-        currentSnip: currentSnip,
-        res: res
-      }, function(item) {
+        snippetName: currentSnip,
+        services: services
+      });
+      s.then(function(item) {
         snipResponse._demoFill(res, item, pkg);
+      });
+      s.error(function(err) {
+        err.details.res= res;
+        errors.searchForError(err.code, err.details);
       });
     }
   });
@@ -75,7 +80,7 @@ snip.jsbin = function(req, res) {
       redirectURL: "http://jsbin.com?js,output"
     });
   });
-}
+};
 
 // http://blog.codepen.io/documentation/api/prefill/
 snip.codepen = function(req, res) {
@@ -97,7 +102,7 @@ snip.codepen = function(req, res) {
       redirectURL: "http://codepen.io/pen/define"
     });
   });
-}
+};
 
 // https://github.com/angular/angular.js/issues/7166
 snip.plunker = function(req, res) {
@@ -120,9 +125,7 @@ snip.plunker = function(req, res) {
       redirectURL: "http://plnkr.co/edit/"
     });
   });
-}
-
-
+};
 
 snip.edit = function(req, res, callback) {
   var name = req.params.name;
@@ -130,31 +133,36 @@ snip.edit = function(req, res, callback) {
   global.db.db().find({
     name: name
   }).exec(function(err, pkg) {
-    if (pkg.length == 0 || pkg[0].latest.sniper == undefined) {
+    if (pkg.length === 0 || pkg[0].latest.sniper == undefined) {
       res.send({
         error: "no snips"
       });
       return;
     }
-    loadSnippet({
+    var s = loadSnippet({
       pkg: pkg[0],
-      currentSnip: currentSnip,
-      res: res
-    }, function(snp) {
+      snippetName: currentSnip,
+      services: services
+    });
+    s.then(function(snp) {
       snipResponse.removeTags(snp);
       var githubRegex = /\/github\//g;
       for (var i in snp.js) {
-        snp.js[i] = snp.js[i].replace(githubRegex, global.ghProxy);
+        snp.js[i] = snp.js[i].replace(githubRegex, services.ghProxy);
       }
       for (var i in snp.css) {
-        snp.css[i] = snp.css[i].replace(githubRegex, global.ghProxy);
+        snp.css[i] = snp.css[i].replace(githubRegex, services.ghProxy);
       }
-      snp.inlineScript = snp.inlineScript.replace(githubRegex, global.ghProxy);
-      snp.inlineBody = snp.inlineBody.replace(githubRegex, global.ghProxy);
+      snp.inlineScript = snp.inlineScript.replace(githubRegex, services.ghProxy);
+      snp.inlineBody = snp.inlineBody.replace(githubRegex, services.ghProxy);
       callback(snp);
     });
+    s.error(function(err) {
+      err.details.res= res;
+      errors.searchForError(err.code, err.details);
+    });
   });
-}
+};
 
 // list available snips
 snip.overview = function(req, res) {
@@ -163,7 +171,7 @@ snip.overview = function(req, res) {
   global.db.db().find({
     name: name
   }).exec(function(err, pkg) {
-    if (pkg.length == 0 || pkg[0].latest.sniper == undefined) {
+    if (pkg.length === 0 || pkg[0].latest.sniper == undefined) {
       errors.noSnippets({
         pkg: pkg,
         currentSnip: currentSnip,
@@ -172,7 +180,7 @@ snip.overview = function(req, res) {
       });
       return;
     }
-    var pkg = pkg[0];
+    pkg = pkg[0];
     var baseURL = req.protocol + '://' + req.get('host') + req.originalUrl;
     // remove path at the end
     if (baseURL.charAt(baseURL.length - 1) !== "/") {
@@ -209,22 +217,24 @@ function serveGithubFile(pkg, path, res) {
   res.set('Content-Type', type);
   // proxy the data from github
   var ttl = 180; // in s
-  rc.get(url, {}, ttl, function(err, resp, body, cache){
-    if(cache.hit){
+  rc.get(url, {}, ttl, function(err, resp, body, cache) {
+    if (cache.hit) {
       log.verbose("serving github file (from cache)", pkg, path);
-    }else{
+    } else {
       log.verbose("serving github file (new to cache)", pkg, path);
     }
     res.send(body);
   });
   //request(url).pipe(res);
   //request.get(url, function(err, response, body) {
-    //res.send(body);
+  //res.send(body);
   //});
 }
 
 var log;
-module.exports = function(logger) {
-  log = logger;
+var services;
+module.exports = function(opts) {
+  log = opts.logger;
+  services = opts.services;
   return snip;
 };

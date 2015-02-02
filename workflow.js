@@ -31,6 +31,7 @@ var workflow = function(opts) {
 
 workflow.prototype.start = function() {
   var self = this;
+
   //this.updatePkg({name: "biojs-vis-msa"}).then(function(p){
     //self.trigger("pkg:updated", p); 
   //});
@@ -113,7 +114,7 @@ workflow.prototype.updatePkg = function(pkg) {
     if(index >= 0){
       this.pkgs[index] = newPkg;
     }else{
-      this.pkgs.append(newPkg);
+      this.pkgs.push(newPkg);
     }
     this.db.updatePkg(newPkg);
     log.info("package update saved: ", newPkg.name);
@@ -146,7 +147,6 @@ workflow.prototype.searchCron = function searchCron() {
   var pkgNames = this.pkgs.map(function(pkg) {
     return pkg.name;
   });
-  console.log(pkgNames.length);
   return keywords(this.keys, this.npm).filter(function(pkg) {
     return pkgNames.indexOf(pkg.name) < 0;
   }).then(function(pkgs) {

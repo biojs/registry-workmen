@@ -53,11 +53,9 @@ snip.demo = function(req, res) {
         pkg: pkg,
         snippetName: currentSnip,
         services: services
-      });
-      s.then(function(item) {
+      }).then(function(item) {
         snipResponse._demoFill(res, item, pkg);
-      });
-      s.error(function(err) {
+      }).catch(function(err) {
         err.details.res = res;
         errors.searchForError(err.code, err.details);
       });
@@ -143,8 +141,7 @@ snip.edit = function(req, res, callback) {
       pkg: pkg[0],
       snippetName: currentSnip,
       services: services
-    });
-    s.then(function(snp) {
+    }).then(function(snp) {
       snipResponse.removeTags(snp);
       var githubRegex = /\/github\//g;
       for (var i in snp.js) {
@@ -156,8 +153,7 @@ snip.edit = function(req, res, callback) {
       snp.inlineScript = snp.inlineScript.replace(githubRegex, services.ghProxy);
       snp.inlineBody = snp.inlineBody.replace(githubRegex, services.ghProxy);
       callback(snp);
-    });
-    s.error(function(err) {
+    }).catch(function(err) {
       err.details.res = res;
       errors.searchForError(err.code, err.details);
     });

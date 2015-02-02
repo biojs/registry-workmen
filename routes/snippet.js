@@ -58,7 +58,7 @@ snip.demo = function(req, res) {
         snipResponse._demoFill(res, item, pkg);
       });
       s.error(function(err) {
-        err.details.res= res;
+        err.details.res = res;
         errors.searchForError(err.code, err.details);
       });
     }
@@ -139,7 +139,7 @@ snip.edit = function(req, res, callback) {
       });
       return;
     }
-    var s = loadSnippet({
+    var s = new SnippetDemo({
       pkg: pkg[0],
       snippetName: currentSnip,
       services: services
@@ -158,7 +158,7 @@ snip.edit = function(req, res, callback) {
       callback(snp);
     });
     s.error(function(err) {
-      err.details.res= res;
+      err.details.res = res;
       errors.searchForError(err.code, err.details);
     });
   });

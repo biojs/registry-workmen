@@ -113,7 +113,7 @@ workflow.prototype.updatePkg = function(pkg) {
     if(index >= 0){
       this.pkgs[index] = newPkg;
     }else{
-      this.pkgs[index].append(newPkg);
+      this.pkgs.append(newPkg);
     }
     this.db.updatePkg(newPkg);
     log.info("package update saved: ", newPkg.name);

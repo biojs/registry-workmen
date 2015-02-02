@@ -15,7 +15,8 @@ opts.registryURL = "http://registry.npmjs.org";
 
 var services = {
   browserifyCDN: "https://wzrd.in/bundle/",
-  rawgit: "https://cdn.rawgit.com/",
+  rawgit: "/github/",
+  ghProxy: "https://cdn.rawgit.com/",
   parcelifyCDN: "http://parce.li/bundle/"
 };
 

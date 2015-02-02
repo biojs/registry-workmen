@@ -234,7 +234,7 @@ function serveGithubFile(pkg, path, res) {
 var log;
 var services;
 module.exports = function(opts) {
-  log = opts.logger;
+  log = opts.log;
   services = opts.services;
   return snip;
 };

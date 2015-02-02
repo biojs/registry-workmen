@@ -158,6 +158,8 @@ module.exports = function(opts) {
           log.warn(err);
         }
       });
+    } else {
+      log.warn("no author info for " + pkg.name);
     }
   });
   evt.on("pkg:updated", function(pkg) {

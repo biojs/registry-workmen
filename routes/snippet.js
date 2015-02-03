@@ -13,12 +13,14 @@ var rc = new RequestCaching();
 
 var snip = {};
 
+// TODO: find a better error system
+// FIXME
 function searchErrorWrapper(err, res) {
-  if (err == undefined) {
-    err = {};
+  if(typeof err !== "object"){
+      err = {details: err};
   }
-  if (err.details == undefined) {
-    err.details = {};
+  if(typeof err.details !== "object"){
+      err.details = {msg: err.details};
   }
   err.details.res = res;
   errors.searchForError(err.code, err.details);

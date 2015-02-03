@@ -22,6 +22,9 @@ errors.searchForError = function(e, opts) {
 
 errors.unknownError = function(opts) {
   var msg = "e500: Unknown error";
+  if(!!opts.msg){
+    msg += " : " + opts.msg;
+  }
   var errors = [];
   errors.push("Please open an issue on https://github.com/biojs/biojs/issues");
   errorHelper(opts, {
@@ -85,6 +88,9 @@ function errorHelper(opts, vars) {
   var res = opts.res;
 
   var detail = vars.detail = {};
+  if (opts.msg !== undefined) {
+    vars.msg += ":" + JSON.stringify(opts.msg);
+  }
   if (opts.currentSnip !== undefined) {
     detail.currentSnip = JSON.stringify(opts.currentSnip);
   }

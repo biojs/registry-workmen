@@ -14,10 +14,10 @@ var rc = new RequestCaching();
 var snip = {};
 
 function searchErrorWrapper(err, res) {
-  if (!err) {
+  if (err == undefined) {
     err = {};
   }
-  if (!err.details) {
+  if (err.details == undefined) {
     err.details = {};
   }
   err.details.res = res;

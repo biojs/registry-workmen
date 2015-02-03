@@ -2,17 +2,20 @@ var errors;
 module.exports = errors = {};
 var swig = require("swig");
 
-errors.searchForError = function(e, opts){
+errors.searchForError = function(e, opts) {
   var foundError;
-  for(var key in errors){
-    if(e.indexOf(key) >= 0){
+  if (!e) {
+    return errors.unknownError(opts);
+  }
+  for (var key in errors) {
+    if (e.indexOf(key) >= 0) {
       foundError = errors[key];
       break;
     }
   }
-  if(foundError){
+  if (foundError) {
     foundError(opts);
-  }else{
+  } else {
     errors.unknownError(opts);
   }
 };

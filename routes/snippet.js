@@ -13,6 +13,17 @@ var rc = new RequestCaching();
 
 var snip = {};
 
+function searchErrorWrapper(err, res) {
+  if (!err) {
+    err = {};
+  }
+  if (!err.details) {
+    err.details = {};
+  }
+  err.details.res = res;
+  errors.searchForError(err.code, err.details);
+}
+
 snip.demo = function(req, res) {
   var name = req.params.name;
   var currentSnip = req.params.snip;
@@ -56,8 +67,7 @@ snip.demo = function(req, res) {
       }).then(function(item) {
         snipResponse._demoFill(res, item, pkg);
       }).catch(function(err) {
-        err.details.res = res;
-        errors.searchForError(err.code, err.details);
+        searchErrorWrapper(err, res); 
       });
     }
   });
@@ -154,8 +164,7 @@ snip.edit = function(req, res, callback) {
       snp.inlineBody = snp.inlineBody.replace(githubRegex, services.ghProxy);
       callback(snp);
     }).catch(function(err) {
-      err.details.res = res;
-      errors.searchForError(err.code, err.details);
+      searchErrorWrapper(err, res); 
     });
   });
 };

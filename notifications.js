@@ -2,8 +2,6 @@ var irc = require('irc');
 var swig = require('swig');
 var email = require("emailjs");
 var Twit = require('twit');
-var ATOM = require('atom');
-var RSS = require('rss');
 
 var isTwitter = !!process.env.TWITTER_CONSUMER_SECRET && !!process.env.TWITTER_CONSUMER_KEY && !!process.env.TWITTER_ACCESS_SECRET && !!process.env.TWITTER_ACCESS_TOKEN;
 
@@ -49,6 +47,9 @@ if (isIRC) {
   });
 }
 
+var genericdb = require("./lib/genericdb");
+var util = require('util');
+
 module.exports = function(opts) {
   var evt = opts.evt;
   var log = opts.log;
@@ -60,73 +61,101 @@ module.exports = function(opts) {
     });
   }
 
-  //var msgBuffer = [];
-  var msgBufferMaxLength = 10;
+  // load a permanent datastorage
+  var database = function(opts) {
+    this.neCacheName = __dirname + '/.necache_pkgevents';
+    this.mongoCollection = "pkgevents";
+  };
+  genericdb.mixin(database.prototype);
+  var self = this;
+  this.db = new database();
+  this.db.loadDB().then(function() {
+    log.debug("notification db loaded");
+  });
+
 
   var newsConfig = {
     title: "BioJS registry news feed",
     description: "Package events from biojs.io",
-    feed_url: "http://workmen.biojs.net/news/rss",
-    site_url: "http://biojs.io",
-    language: "en",
+    newsUrl: "http://workmen.biojs.net/news",
+    siteUrl: "http://biojs.io",
+    author: "BioJS",
+    authorEmail: "biojs@googlegroups.com",
+    lang: "en",
     ttl: "5",
-    pubDate: new Date(),
-    date: new Date(),
-    updated: new Date(),
   };
-  var rfeed = new RSS(newsConfig);
-  var afeed = new ATOM(newsConfig);
-  this.rss = function(req, res) {
-    var xml = rfeed.xml({
-      indent: true
-    });
-    res.send(xml);
-  };
-  this.atom = function(req, res) {
-    var xml = afeed.xml({
-      indent: true
-    });
-    res.send(xml);
+  var getTitle = function(pkg) {
+    var msg = "";
+    if (pkg.updateType === "new") {
+      msg = "BioJS got a new package: " + pkg.name;
+    } else {
+      msg = "BioJS package update: " + pkg.name;
+    }
+    if (pkg.author && pkg.author.name) {
+      msg += " by " + pkg.author.name;
+    }
+    return msg;
   };
 
-  function addRSS(text, pkg) {
-    log.info("adding rss item " + pkg.name);
-    var item = {
-      title: text,
-      url: "http://biojs.io/" + pkg.name,
-      date: new Date()
+  var news = function(type) {
+    return function(req, res) {
+      var limit = req.params.limit || 2;
+      self.db.db().find({}).sort({
+        time: -1
+      }).limit(limit).exec(function(err, posts) {
+        if (err) {
+          log.error(err);
+        }
+        posts.forEach(function(p) {
+          p.title = "BioJS package";
+          p.url = "http://biojs.io/d/" + p.name;
+          p.date = new Date(p.time);
+          p.id = p.name + "@" + p.version;
+        });
+        if (type === "json") {
+          return res.jsonp(posts);
+        } else {
+          res.render("news/" + type, {
+            site: newsConfig,
+            currentDate: new Date(),
+            posts: posts
+          });
+        }
+      });
     };
-    if (pkg.author && pkg.author.name) {
-      item.author = pkg.author.name;
-    }
-    rfeed.item(item);
-    afeed.item(item);
-    // fix atom
-    afeed.items[afeed.items.length - 1].updated = new Date();
-    while (rfeed.items.length > msgBufferMaxLength) {
-      rfeed.items.shift();
-    }
-    while (afeed.items.length > msgBufferMaxLength) {
-      afeed.items.shift();
-    }
-  }
+  };
+  this.atom = news("atom");
+  this.rss = news("rss");
+  this.json = news("json");
 
   function speak(text, pkg) {
-
-    //msgBuffer.unshift(text);
-    //while (msgBuffer.length > msgBufferMaxLength) {
-    //msgBuffer.pop();
-    //}
 
     // post to IRC
     if (isIRC && client && client.connected) {
       client.say(channelName, text);
     }
 
+    // log to DB
+    if (self.db.loaded) {
+      self.db.db().insert({
+        name: pkg.name,
+        version: pkg.version,
+        author: pkg.author,
+        description: pkg.description,
+        updateType: pkg.updateType,
+        updateVersionType: pkg.releaseVersionType,
+        time: new Date().getTime()
+      }, function(err, doc) {
+        if (err) {
+          log.error(err);
+        }
+      });
+    }
+
     // post to twitter
     var validType = ["major", "premajor", "minor", "preminor"];
     // only allow new packages or important releases
-    if (T || pkg.lastUpdateType === "new" || validType.indexOf(pkg.updateType) >= 0) {
+    if (T || pkg.updateType === "new" || validType.indexOf(pkg.updateVersionType) >= 0) {
       T.post('statuses/update', {
         status: text + "\n" + "http://biojs.io/d/" + pkg.name + " #biojs"
       }, function(err, data, response) {
@@ -137,9 +166,6 @@ module.exports = function(opts) {
     } else {
       log.debug(text + "was NOT displayed on twitter. updateType: " + pkg.updateType + " ,releaseType: " + pkg.lastUpdateType);
     }
-
-    // add RSS
-    addRSS(text, pkg);
   }
 
   var newPkgMail = swig.compileFile(__dirname + '/templates/mails/new_package.tpl');
@@ -147,7 +173,7 @@ module.exports = function(opts) {
   evt.on("pkg:new", function(pkg) {
     var msg = "BioJS got a new package: " + pkg.name;
     if (pkg.author && pkg.author.name) {
-      msg += " by @" + pkg.author.name;
+      msg += " by " + pkg.author.name;
     }
     speak(msg, pkg);
 

@@ -142,8 +142,8 @@ workflow.prototype.updateCronJob = function updateCronJob() {
       if (oldPkg.version != newPkg.version && newPkg.name != undefined) {
         log.info("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
         self.updatePkg(newPkg.name).then(function() {
-          newPkg.updateType = semver.diff(oldPkg.version, newPkg.version);
-          newPkg.lastUpdateType = "update";
+          newPkg.updateVersionType = semver.diff(oldPkg.version, newPkg.version);
+          newPkg.updateType = "update";
           self.trigger("pkg:updated", newPkg);
         });
       }
@@ -164,7 +164,7 @@ workflow.prototype.searchCron = function searchCron() {
       pkgs.forEach(function(pkg) {
         log.info("new package found: ", pkg.name);
         self.updatePkg(pkg.name).then(function() {
-          pkg.lastUpdateType = "new";
+          pkg.updateType = "new";
           self.trigger("pkg:new", pkg);
         });
       });

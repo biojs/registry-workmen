@@ -33,7 +33,6 @@
     "start": "node server.js 5000"
   },
   "dependencies": {
-    "atom": "git://github.com/dylang/node-atom",
     "biojs-events": "0.0.4",
     "biojs-util-snippets": "^0.1.12",
     "bluebird": "^2.3.11",
@@ -57,7 +56,6 @@
     "npm-registry": "^0.1.11",
     "request": "^2.44.0",
     "response-time": "^2.2.0",
-    "rss": "^1.1.1",
     "semver": "^4.2.0",
     "swig": "^1.4.2",
     "traverse": "^0.6.6",

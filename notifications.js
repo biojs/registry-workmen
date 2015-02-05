@@ -144,7 +144,7 @@ module.exports = function(opts) {
         author: pkg.author,
         description: pkg.description,
         updateType: pkg.updateType,
-        updateVersionType: pkg.releaseVersionType,
+        updateVersionType: pkg.updateVersionType,
         time: new Date().getTime()
       }, {
         upsert: true
@@ -158,7 +158,7 @@ module.exports = function(opts) {
     // post to twitter
     var validType = ["major", "premajor", "minor", "preminor"];
     // only allow new packages or important releases
-    if (T || pkg.updateType === "new" || validType.indexOf(pkg.updateVersionType) >= 0) {
+    if (!!T && (pkg.updateType === "new" || (validType.indexOf(pkg.updateVersionType) >= 0 && pkg.updateVersionType != undefined))) {
       T.post('statuses/update', {
         status: text + "\n" + "http://biojs.io/d/" + pkg.name + " #biojs"
       }, function(err, data, response) {
@@ -167,7 +167,7 @@ module.exports = function(opts) {
         }
       });
     } else {
-      log.debug(text + "was NOT displayed on twitter. updateType: " + pkg.updateType + " ,releaseType: " + pkg.lastUpdateType);
+      log.debug(text + "was NOT displayed on twitter. updateType: " + pkg.updateType + " ,releaseType: " + pkg.updateVersionType);
     }
   }
 

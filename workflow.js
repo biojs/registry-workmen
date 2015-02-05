@@ -35,16 +35,11 @@ workflow.prototype.start = function() {
   var self = this;
 
   if (this.debug) {
-    this.updatePkg({
-      name: "biojs-vis-msa"
-    }).then(function(p) {
-      self.trigger("pkg:updated", p);
-    });
-    this.updatePkg({
-      name: "apinatomy-core"
-    }).then(function(p) {
-      self.trigger("pkg:updated", p);
-    });
+    this.pkgs = [
+      {name: "apinatomy-core", version: "0.0.1"},
+      {name: "biojs-vis-msa", version: "0.0.1"}
+    ];
+    this.updateCronJob();
     //this.searchCronI = setInterval(this.searchCron.bind(this), 5000);
     return q.resolve("a");
   }

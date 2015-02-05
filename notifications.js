@@ -43,7 +43,7 @@ if (isIRC) {
   });
 
   client.addListener("error", function(err) {
-    console.warn("irc:" + err);
+    console.warn("irc:", err);
   });
 }
 
@@ -138,7 +138,7 @@ module.exports = function(opts) {
 
     // log to DB
     if (self.db.loaded) {
-      self.db.db().insert({
+      self.db.db().update({nonexisting: true}, {
         name: pkg.name,
         version: pkg.version,
         author: pkg.author,
@@ -146,6 +146,8 @@ module.exports = function(opts) {
         updateType: pkg.updateType,
         updateVersionType: pkg.releaseVersionType,
         time: new Date().getTime()
+      }, {
+        upsert: true
       }, function(err, doc) {
         if (err) {
           log.error(err);

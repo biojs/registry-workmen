@@ -65,6 +65,15 @@ Will forword you to the specific editors with the snippet.
 
 [`/plunker/:name/:snippet`](http://workmen.biojs.net/plunker/biojs-vis-msa/msa_show_menu)
 
+#### Package news
+
+[`/news/atom`](http://workmen.biojs.net/news/atom): Display the package event stream in the ATOM format
+
+[`/news/rss`](http://workmen.biojs.net/news/atom): Display the package event stream in the RSS format
+
+[`/news/json`](http://workmen.biojs.net/news/atom): Display the package event stream in JSON
+
+
 #### Debug
 
 [`/logs`](http://workmen.biojs.net/logs): Display the latest log outputs

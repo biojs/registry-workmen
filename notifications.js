@@ -63,6 +63,7 @@ module.exports = function(opts) {
 
   // load a permanent datastorage
   var database = function(opts) {
+    this.log = log;
     this.neCacheName = __dirname + '/.necache_pkgevents';
     this.mongoCollection = "pkgevents";
   };

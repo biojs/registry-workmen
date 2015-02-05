@@ -2,6 +2,7 @@ var q = require('bluebird');
 var registry = require("npm-registry");
 var _ = require('underscore');
 var NpmPublishStream = require('npm-publish-stream');
+var semver = require('semver');
 
 var database = require("./lib/database.js");
 
@@ -24,6 +25,7 @@ var workflow = function(opts) {
   });
   this.dbLoad = this.db.load();
   this.pkgs = [];
+  this.debug = opts.debug;
   this.npm = new registry({
     registry: opts.registryURL
   });
@@ -32,14 +34,20 @@ var workflow = function(opts) {
 workflow.prototype.start = function() {
   var self = this;
 
-  //this.updatePkg({name: "biojs-vis-msa"}).then(function(p){
-    //self.trigger("pkg:updated", p); 
-  //});
-  //this.updatePkg({name: "biojs-vis-seqlogo"}).then(function(p){
-    //self.trigger("pkg:updated", p); 
-  //});
-  //this.searchCronI = setInterval(this.searchCron.bind(this), 5000);
-  //return q.resolve("a");
+  if (this.debug) {
+    this.updatePkg({
+      name: "biojs-vis-msa"
+    }).then(function(p) {
+      self.trigger("pkg:updated", p);
+    });
+    this.updatePkg({
+      name: "apinatomy-core"
+    }).then(function(p) {
+      self.trigger("pkg:updated", p);
+    });
+    //this.searchCronI = setInterval(this.searchCron.bind(this), 5000);
+    return q.resolve("a");
+  }
   return this.run().then(function() {
     this.reloadCronI = setInterval(this.run.bind(this), this.refreshTime * 1000);
     this.searchCronI = setInterval(this.searchCron.bind(this), this.searchTime * 1000);
@@ -111,9 +119,9 @@ workflow.prototype.postDownload = function(pkg) {
 workflow.prototype.updatePkg = function(pkg) {
   return this.downloadPkg(pkg).then(function(newPkg) {
     var index = _.indexOf(_.pluck(this.pkgs, "name"), newPkg.name);
-    if(index >= 0){
+    if (index >= 0) {
       this.pkgs[index] = newPkg;
-    }else{
+    } else {
       this.pkgs.push(newPkg);
     }
     this.db.updatePkg(newPkg);
@@ -133,7 +141,9 @@ workflow.prototype.updateCronJob = function updateCronJob() {
       // we have only the latest version -> download entire package
       if (oldPkg.version != newPkg.version && newPkg.name != undefined) {
         log.info("new package uploaded: ", newPkg.name, newPkg.version, oldPkg.version);
-        self.updatePkg(newPkg.name).then(function(){
+        self.updatePkg(newPkg.name).then(function() {
+          newPkg.updateType = semver.diff(oldPkg.version, newPkg.version);
+          newPkg.lastUpdateType = "update";
           self.trigger("pkg:updated", newPkg);
         });
       }
@@ -153,7 +163,8 @@ workflow.prototype.searchCron = function searchCron() {
     if (pkgs.length > 0) {
       pkgs.forEach(function(pkg) {
         log.info("new package found: ", pkg.name);
-        self.updatePkg(pkg.name).then(function(){
+        self.updatePkg(pkg.name).then(function() {
+          pkg.lastUpdateType = "new";
           self.trigger("pkg:new", pkg);
         });
       });

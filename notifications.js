@@ -30,29 +30,35 @@ if (isHeroku) {
   });
 }
 
+var isIRC = isHeroku;
 var channelName = "#biojs";
+if (isIRC) {
+  var client = new irc.Client('irc.freenode.net', 'biojs-registry', {
+    userName: "biojs-registry",
+    secure: true,
+    port: 7000,
+    showError: false,
+    debug: false,
+    floodProtection: true,
+    floodProtectionDelay: 500,
+    channels: [channelName]
+  });
 
-var client = new irc.Client('irc.freenode.net', 'biojs-registry', {
-  userName: "biojs-registry",
-  secure: true,
-  port: 7000,
-  showError: false,
-  debug: false,
-  floodProtection: true,
-  floodProtectionDelay: 500,
-  channels: [channelName]
-});
-
-client.addListener("error", function() {});
+  client.addListener("error", function(err) {
+    console.warn("irc:" + err);
+  });
+}
 
 module.exports = function(opts) {
   var evt = opts.evt;
   var log = opts.log;
 
-  client.join(channelName, function() {
-    client.connected = true;
-    log.info("joined irc channel");
-  });
+  if (isIRC && !!client) {
+    client.join(channelName, function() {
+      client.connected = true;
+      log.info("joined irc channel");
+    });
+  }
 
   //var msgBuffer = [];
   var msgBufferMaxLength = 10;
@@ -113,12 +119,14 @@ module.exports = function(opts) {
     //}
 
     // post to IRC
-    if (client.connected) {
+    if (isIRC && client && client.connected) {
       client.say(channelName, text);
     }
 
     // post to twitter
-    if (T) {
+    var validType = ["major", "premajor", "minor", "preminor"];
+    // only allow new packages or important releases
+    if (T || pkg.lastUpdateType === "new" || validType.indexOf(pkg.updateType) >= 0) {
       T.post('statuses/update', {
         status: text + "\n" + "http://biojs.io/d/" + pkg.name + " #biojs"
       }, function(err, data, response) {
@@ -126,6 +134,8 @@ module.exports = function(opts) {
           log.error(err);
         }
       });
+    } else {
+      log.debug(text + "was NOT displayed on twitter. updateType: " + pkg.updateType + " ,releaseType: " + pkg.lastUpdateType);
     }
 
     // add RSS
@@ -156,6 +166,8 @@ module.exports = function(opts) {
       }, function(err, message) {
         if (err) {
           log.warn(err);
+        } else {
+          log.debug("mail: " + message);
         }
       });
     } else {

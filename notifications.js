@@ -113,8 +113,8 @@ module.exports = function(opts) {
           log.error(err);
         }
         posts.forEach(function(p) {
-          if(p.updateType == "update"){
-            p.title = p.updateVersionType + " package updated to " + p.version;
+          if(p.updateType === "update"){
+            p.title = p.name + ":" + p.updateVersionType + " update to " + p.version;
           }else{
             if(p.author){
               p.title = p.author.name + " published " + p.name;

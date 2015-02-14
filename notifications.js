@@ -104,7 +104,7 @@ module.exports = function(opts) {
       var limit = req.query.limit || 5;
       var versions = req.query.versions;
       if(versions){
-        filt.$or = [{updateType: {$in: versions}}, {updateType: {$exists: false}}];
+        filt.$or = [{updateVersionType: {$in: versions}}, {updateVersionType: {$exists: false}}];
       }
       self.db.db().find(filt).sort({
         time: -1

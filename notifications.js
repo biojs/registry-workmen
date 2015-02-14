@@ -100,15 +100,28 @@ module.exports = function(opts) {
 
   var news = function(type) {
     return function(req, res) {
-      var limit = req.params.limit || 2;
-      self.db.db().find({}).sort({
+      var filt = {};
+      var limit = req.query.limit || 5;
+      var versions = req.query.versions;
+      if(versions){
+        filt.$or = [{updateType: {$in: versions}}, {updateType: {$exists: false}}];
+      }
+      self.db.db().find(filt).sort({
         time: -1
       }).limit(limit).exec(function(err, posts) {
         if (err) {
           log.error(err);
         }
         posts.forEach(function(p) {
-          p.title = "BioJS package";
+          if(p.updateType == "update"){
+            p.title = p.updateVersionType + " package updated to " + p.version;
+          }else{
+            if(p.author){
+              p.title = p.author.name + " published " + p.name;
+            }else{
+              p.title = "BioJS got a new package: " + p.name;
+            }
+          }
           p.url = "http://biojs.io/d/" + p.name;
           p.date = new Date(p.time);
           p.id = p.name + "@" + p.version;

@@ -71,8 +71,14 @@ Will forword you to the specific editors with the snippet.
 
 [`/news/rss`](http://workmen.biojs.net/news/atom): Display the package event stream in the RSS format
 
-[`/news/json`](http://workmen.biojs.net/news/atom): Display the package event stream in JSON
+[`/news/json`](http://workmen.biojs.net/news/json): Display the package event stream in JSON
 
+You can filter with the following parameter
+
+* `limit`: many results show be shown (default: 5)
+* `versions`: what versions show be shown (default: all)
+e.g. http://workmen.biojs.net/news/json?versions=major&versions=minor 
+(new package updates will be shown too)
 
 #### Debug
 

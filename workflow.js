@@ -36,7 +36,7 @@ workflow.prototype.start = function() {
 
   if (this.debug) {
     this.pkgs = [
-      {name: "apinatomy-core", version: "0.0.1"},
+      {name: "angularplasmid", version: "0.0.1"},
       {name: "biojs-vis-msa", version: "0.0.1"}
     ];
     this.updateCronJob();

@@ -143,6 +143,9 @@ workflow.prototype.updatePkg = function(pkg) {
 
 // download the tagged list and apply it
 workflow.prototype.loadIoTags = function(pkgs) {
+  if (!this.iotagurl) {
+    return q.resolve(pkgs);
+  }
   return rp(this.iotagurl).then(function(raw) {
     var packages = JSON.parse(raw);
     log.warn("found " + Object.keys(packages).length + " packages with iotags");

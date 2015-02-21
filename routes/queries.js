@@ -96,7 +96,7 @@ queries.search = function search(req, res) {
 // attributes to keep in the short version
 var defaultProps = ['created', 'description', 'dependencies', 'devDependencies',
   'dist-tags', 'releases', 'version', 'versions', 'license', 'name', 'modified', 'npmDownloadsLastWeek',
-  'npmDownloads', 'keywords', 'stars', 'homepage', 'author', 'repository', 'contributors'
+  'npmDownloads', 'keywords', 'stars', 'homepage', 'author', 'repository', 'contributors', 'iotags'
 ];
 
 function limitPackage(pkg, props) {

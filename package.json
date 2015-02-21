@@ -55,6 +55,7 @@
     "npm-publish-stream": "^1.0.2",
     "npm-registry": "^0.1.11",
     "request": "^2.44.0",
+    "request-promise": "^0.4.0",
     "response-time": "^2.2.0",
     "semver": "^4.2.0",
     "swig": "^1.4.2",

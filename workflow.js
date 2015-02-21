@@ -3,6 +3,7 @@ var registry = require("npm-registry");
 var _ = require('underscore');
 var NpmPublishStream = require('npm-publish-stream');
 var semver = require('semver');
+var rp = require('request-promise');
 
 var database = require("./lib/database.js");
 
@@ -20,6 +21,7 @@ var workflow = function(opts) {
   this.refreshTime = opts.refreshTime || 3600;
   this.searchTime = opts.searchTime || 120;
   this.updateInterval = opts.updateInterval || 60;
+  this.iotagurl = opts.iotagurl;
   this.db = new database({
     log: log
   });
@@ -35,14 +37,18 @@ workflow.prototype.start = function() {
   var self = this;
 
   if (this.debug) {
-    this.pkgs = [
-      {name: "angularplasmid", version: "0.0.1"},
-      {name: "biojs-vis-msa", version: "0.0.1"}
-    ];
+    this.pkgs = [{
+      name: "angularplasmid",
+      version: "0.0.1"
+    }, {
+      name: "biojs-vis-msa",
+      version: "0.0.1"
+    }];
     this.updateCronJob();
     //this.searchCronI = setInterval(this.searchCron.bind(this), 5000);
     return q.resolve("a");
   }
+  log.debug("starting downloader");
   return this.run().then(function() {
     this.reloadCronI = setInterval(this.run.bind(this), this.refreshTime * 1000);
     this.searchCronI = setInterval(this.searchCron.bind(this), this.searchTime * 1000);
@@ -57,24 +63,31 @@ workflow.prototype.start = function() {
 // 1) download package list
 workflow.prototype.run = function run() {
   var self = this;
-  return keywords(this.keys, this.npm).map(this.downloadPkg.bind(this)).then(function(pkgs) {
-    // on succes:  save to DB 
-    log.info("workflow: trying to save into DB.");
-    self.pkgs = pkgs.map(function(el) {
-      return {
-        name: el.name,
-        version: el.version
-      };
-    });
-    self.dbLoad
-      .then(self.db.loadCache.bind(self.db))
-      .then(function() {
-        return self.db.save(pkgs);
+  return keywords(this.keys, this.npm)
+    .map(this.downloadPkg.bind(this))
+    .then(function(pkgs) {
+      // on succes:  save to DB 
+      log.info("workflow: trying to save into DB.");
+      self.pkgs = pkgs.map(function(el) {
+        return {
+          name: el.name,
+          version: el.version
+        };
       });
-  }).then(function() {
-    log.info("workflow: load complete.");
-    return self.pkgs;
-  });
+      // post process the package list
+      return self.loadIoTags(pkgs);
+
+    }).then(function(pkgs) {
+      // save in DB
+      self.dbLoad
+        .then(self.db.loadCache.bind(self.db))
+        .then(function() {
+          return self.db.save(pkgs);
+        });
+    }).then(function() {
+      log.info("workflow: load complete.");
+      return self.pkgs;
+    });
 };
 
 // 2) crawl the package from NPM
@@ -97,7 +110,7 @@ workflow.prototype.postDownload = function(pkg) {
   };
   ps.push(new ghClient(pkg, opts));
   ps.push(new npmHistory(pkg, opts, this.npm));
-  return q.all(ps).then(function() {
+  return q.settle(ps).then(function() {
     return postProcessor(pkg, postOpts);
   }).catch(function(err) {
     if (err != undefined && err.name !== "queryEvents") {
@@ -125,6 +138,24 @@ workflow.prototype.updatePkg = function(pkg) {
   }.bind(this)).catch(function(err) {
     log.warn("err during package update: ", pkg.name);
     log.warn(err);
+  });
+};
+
+// download the tagged list and apply it
+workflow.prototype.loadIoTags = function(pkgs) {
+  return rp(this.iotagurl).then(function(raw) {
+    var packages = JSON.parse(raw);
+    log.warn("found " + Object.keys(packages).length + " packages with iotags");
+    for (var name in packages) {
+      var ps = pkgs.filter(function(p) {
+        return p.name === name
+      });
+      if (ps.length == 1) {
+        var p = ps[0];
+        p.iotags = packages[name];
+      }
+    }
+    return pkgs;
   });
 };
 

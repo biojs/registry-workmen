@@ -219,7 +219,7 @@ module.exports = function(opts) {
   evt.on("pkg:updated", function(pkg) {
     var text = "BioJS package update: " + pkg.name + " to " + pkg.version;
     if (pkg.author && pkg.author.name) {
-      text += " by @" + pkg.author.name;
+      text += " by " + pkg.author.name;
     }
     speak(text, pkg);
   });

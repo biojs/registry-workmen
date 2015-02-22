@@ -86,6 +86,13 @@ e.g. http://workmen.biojs.net/news/json?versions=major&versions=minor
 
 (see `server.js`)
 
+Dev registry
+------------
+
+This branch is synchronized with a dev registry.
+
+-> use it [http://dev.workman.biojs.net](http://dev.workman.biojs.net)
+
 
 Install
 -------

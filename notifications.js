@@ -16,46 +16,50 @@ if (isTwitter) {
 } else {
   console.log("no twitter tokens provided");
 }
-
-var isHeroku = !!process.env["MANDRILL_USERNAME"];
-if (isHeroku) {
-  var server = email.server.connect({
-    user: process.env["MANDRILL_USERNAME"],
-    password: process.env["MANDRILL_APIKEY"],
-    host: "smtp.mandrillapp.com",
-    ssl: true,
-    domain: "heroku.com"
-  });
-}
-
-var isIRC = isHeroku;
-var channelName = "#biojs";
-if (isIRC) {
-  var client = new irc.Client('irc.freenode.net', 'biojs-registry', {
-    userName: "biojs-registry",
-    secure: true,
-    port: 7000,
-    showError: false,
-    debug: false,
-    floodProtection: true,
-    floodProtectionDelay: 500,
-    channels: [channelName]
-  });
-
-  client.addListener("error", function(err) {
-    console.warn("irc:", err);
-  });
-}
-
 var genericdb = require("./lib/genericdb");
 var util = require('util');
 
 module.exports = function(opts) {
   var evt = opts.evt;
   var log = opts.log;
+  var ircOpts = opts.irc;
+  var isProduction = opts.isProduction;
+
+  if (isProduction) {
+    log.debug("notifications are in production mode");
+    var server = email.server.connect({
+      user: process.env["MANDRILL_USERNAME"],
+      password: process.env["MANDRILL_APIKEY"],
+      host: "smtp.mandrillapp.com",
+      ssl: true,
+      domain: "heroku.com"
+    });
+  } else {
+    log.debug("notifications are in production mode");
+  }
+
+  var isIRC = isProduction;
+  if (isIRC) {
+    var client = new irc.Client(ircOpts.network, ircOpts.userName, {
+      userName: ircOpts.userName,
+      secure: true,
+      port: 7000,
+      showError: false,
+      debug: false,
+      floodProtection: true,
+      floodProtectionDelay: 500,
+      channels: [ircOpts.channelName]
+    });
+
+    client.addListener("error", function(err) {
+      console.warn("irc:", err);
+    });
+  }
+
+
 
   if (isIRC && !!client) {
-    client.join(channelName, function() {
+    client.join(ircOpts.channelName, function() {
       client.connected = true;
       log.info("joined irc channel");
     });
@@ -103,8 +107,16 @@ module.exports = function(opts) {
       var filt = {};
       var limit = req.query.limit || 5;
       var versions = req.query.versions;
-      if(versions){
-        filt.$or = [{updateVersionType: {$in: versions}}, {updateVersionType: {$exists: false}}];
+      if (versions) {
+        filt.$or = [{
+          updateVersionType: {
+            $in: versions
+          }
+        }, {
+          updateVersionType: {
+            $exists: false
+          }
+        }];
       }
       self.db.db().find(filt).sort({
         time: -1
@@ -113,12 +125,12 @@ module.exports = function(opts) {
           log.error(err);
         }
         posts.forEach(function(p) {
-          if(p.updateType === "update"){
+          if (p.updateType === "update") {
             p.title = p.name + ":" + p.updateVersionType + " update to " + p.version;
-          }else{
-            if(p.author){
+          } else {
+            if (p.author) {
               p.title = p.author.name + " published " + p.name;
-            }else{
+            } else {
               p.title = "BioJS got a new package: " + p.name;
             }
           }
@@ -146,12 +158,14 @@ module.exports = function(opts) {
 
     // post to IRC
     if (isIRC && client && client.connected) {
-      client.say(channelName, text);
+      client.say(ircOpts.channelName, text);
     }
 
     // log to DB
     if (self.db.loaded) {
-      self.db.db().update({nonexisting: true}, {
+      self.db.db().update({
+        nonexisting: true
+      }, {
         name: pkg.name,
         version: pkg.version,
         author: pkg.author,

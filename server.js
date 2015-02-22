@@ -11,7 +11,7 @@ var port = process.env.PORT || process.argv[2] || 3000;
 var opts = {};
 opts.refreshTime = process.env.REFRESH_TIME || 3600; // in s
 opts.keys = ['biojs', 'bionode'];
-opts.registryURL = "http://registry.npmjs.org";
+opts.registryURL = "http://registry.npmjs.com";
 opts.iotagurl = "https://raw.githubusercontent.com/biojs-dead/io-ratings/master/list.json";
 opts.debug = !!process.env.REG_DEBUG;
 
@@ -83,7 +83,13 @@ flow.start().then(function() {
 var notifications = require("./notifications");
 var notify = new notifications({
   evt: flow,
-  log: logger
+  log: logger,
+  irc: {
+    network: 'irc.freenode.net',
+    userName: "biojs-registry",
+    channelName: "#biojs"
+  },
+  isProduction: process.env["MANDRILL_USERNAME"] && !process.env["DEV_REGISTRY"]
 });
 
 // middlewares

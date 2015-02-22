@@ -91,7 +91,7 @@ Dev registry
 
 This branch is synchronized with a dev registry.
 
--> use it [http://dev.workman.biojs.net](http://dev.workman.biojs.net)
+-> use it [http://dev.workmen.biojs.net](http://dev.workmen.biojs.net)
 
 
 Install

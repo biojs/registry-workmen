@@ -12,7 +12,7 @@ var opts = {};
 opts.refreshTime = process.env.REFRESH_TIME || 3600; // in s
 opts.keys = ['biojs', 'bionode'];
 opts.registryURL = "http://registry.npmjs.com";
-opts.iotagurl = "https://raw.githubusercontent.com/biojs-dead/io-ratings/master/list.json";
+opts.iotagurl = "https://raw.githubusercontent.com/biojs-dead/io-ratings/master/list.yaml";
 opts.debug = !!process.env.REG_DEBUG;
 
 var services = {

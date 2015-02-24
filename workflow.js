@@ -4,6 +4,7 @@ var _ = require('underscore');
 var NpmPublishStream = require('npm-publish-stream');
 var semver = require('semver');
 var rp = require('request-promise');
+var yaml = require('js-yaml');
 
 var database = require("./lib/database.js");
 
@@ -146,14 +147,19 @@ workflow.prototype.loadIoTags = function(pkgs) {
   if (!this.iotagurl) {
     return q.resolve(pkgs);
   }
-  return rp(this.iotagurl).then(function(raw) {
-    var packages = JSON.parse(raw);
+  return rp(this.iotagurl).then(function(raw){
+    return new q.Promise(function(resolve){
+      yaml.safeLoadAll(raw, function(data){
+        resolve(data); 
+      });
+    });
+  }).then(function(packages) {
     log.warn("found " + Object.keys(packages).length + " packages with iotags");
     for (var name in packages) {
       var ps = pkgs.filter(function(p) {
-        return p.name === name
+        return p.name === name;
       });
-      if (ps.length == 1) {
+      if (ps.length === 1) {
         var p = ps[0];
         p.iotags = packages[name];
       }

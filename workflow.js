@@ -46,6 +46,7 @@ workflow.prototype.start = function() {
       version: "0.0.1"
     }];
     this.updateCronJob();
+    this.loadIoTags(this.pkgs);
     //this.searchCronI = setInterval(this.searchCron.bind(this), 5000);
     return q.resolve("a");
   }
@@ -147,12 +148,11 @@ workflow.prototype.loadIoTags = function(pkgs) {
   if (!this.iotagurl) {
     return q.resolve(pkgs);
   }
+  log.debug("downloading yaml file: " + this.iotagurl);
   return rp(this.iotagurl).then(function(raw){
-    return new q.Promise(function(resolve){
-      yaml.safeLoadAll(raw, function(data){
-        resolve(data); 
-      });
-    });
+    log.debug("loading yaml file");
+    var data = yaml.safeLoad(raw);
+    return data;
   }).then(function(packages) {
     log.warn("found " + Object.keys(packages).length + " packages with iotags");
     for (var name in packages) {

@@ -225,7 +225,7 @@ function serveGithubFile(pkg, path, res) {
   // proxy the data from github
   var ttl = 180; // in s
   rc.get(url, {}, ttl, function(err, resp, body, cache) {
-    if (cache.hit) {
+    if (cache && cache.hit) {
       log.verbose("serving github file (from cache)", pkg, path);
     } else {
       log.verbose("serving github file (new to cache)", pkg, path);

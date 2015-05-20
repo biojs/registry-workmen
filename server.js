@@ -42,7 +42,7 @@ if (mongo.prototype.isMongo()) {
     collection: "logs",
     dbUri: mongo.prototype.getMongoUri(),
     capped: true,
-    cappedSize: 10000000, // roughly 10 MB
+    cappedSize: 5000000, // roughly 5 MB
   });
   logOpts.transports.push(mongoTransport);
   console.log("using MongoDB as winston log storage");

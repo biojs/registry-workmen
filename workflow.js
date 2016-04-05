@@ -37,19 +37,6 @@ var workflow = function(opts) {
 workflow.prototype.start = function() {
   var self = this;
 
-  if (this.debug) {
-    this.pkgs = [{
-      name: "angularplasmid",
-      version: "0.0.1"
-    }, {
-      name: "biojs-vis-msa",
-      version: "0.0.1"
-    }];
-    this.updateCronJob();
-    this.loadIoTags(this.pkgs);
-    //this.searchCronI = setInterval(this.searchCron.bind(this), 5000);
-    return q.resolve("a");
-  }
   log.debug("starting downloader");
   return this.run().then(function() {
     this.reloadCronI = setInterval(this.run.bind(this), this.refreshTime * 1000);
@@ -65,8 +52,21 @@ workflow.prototype.start = function() {
 // 1) download package list
 workflow.prototype.run = function run() {
   var self = this;
-  return keywords(this.keys, this.npm)
-    .map(this.downloadPkg.bind(this))
+
+  var ps;
+
+  if (this.debug) {
+    ps = q.resolve([{
+      name: "angularplasmid",
+      version: "0.0.1"
+    }, {
+      name: "msa",
+      version: "0.4.11"
+    }]);
+  }else{
+    ps = keywords(this.keys, this.npm);
+  }
+  return ps.map(this.downloadPkg.bind(this))
     .then(function(pkgs) {
       // on succes:  save to DB 
       log.info("workflow: trying to save into DB.");

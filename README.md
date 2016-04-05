@@ -127,9 +127,9 @@ Two requirements
 Creds for github
 ------
 
-Create your own oAuth token here
+Create your own oAuth token here with "public_repo" access
 
-https://github.com/settings/applications
+https://github.com/settings/tokens
 
 ### a) via `creds.json`
 

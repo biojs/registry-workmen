@@ -73,8 +73,10 @@ var winston = require("winston");
             log: winston
           });
           ghClient.then(function(msa) {
-            assert.equal(msa.github.id, 20128188);
-            assert.equal(msa.github.commits, 597);
+            var parsedGithubMSA = JSON.parse(msa.github, 'utf8');
+            // assert.equal(msa.github.id, 20128188);
+            assert.equal(parsedGithubMSA.id, 20128188);
+            // assert.equal(msa.github.commits, 597);
             done();
           });
         });

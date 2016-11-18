@@ -17,7 +17,8 @@ gulp.task('mocha', function () {
   return gulp.src('./test/*.js')
     .pipe(mocha({
       globals: ['chai'],
-      timeout: 6000,
+      // timeout: 6000,
+      timeout: 30000,
       ignoreLeaks: false,
       useColors: false,
       ui: 'bdd',

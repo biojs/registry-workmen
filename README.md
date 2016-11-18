@@ -127,16 +127,19 @@ Two requirements
 Creds for github
 ------
 
-Create your own oAuth token here with "public_repo" access
+Follow this link and create your own oAuth token here with "public_repo" access
 
 https://github.com/settings/tokens
 
+You can use your token to authenticate with github either via a local `creds.json` file
+or via an `ENV` variable:
+
 ### a) via `creds.json`
 
-`creds.json` (root folder)
+Create a `creds.json` in the root of the project with the following content:
 
 ```
-{type:"oauth", token:"<token>"}
+{"type": "oauth", "token": "<token>"}
 ```
 
 ### b) via ENVs
